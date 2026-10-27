@@ -1,8 +1,8 @@
-# game-3d starter (three.js + Rapier)
+# Drift King: Steppe Neon
 
-A complete, small 3D game — **Sky Cores**: run, jump and dash across floating islands to collect
-every energy core before the clock runs out, avoiding patrol drones. It exists to be *changed*:
-the engine layer is fixed scaffolding, the game layer is the part you rewrite.
+Монгол хэл, English, and Simplified Chinese support-той 60 секундийн 3D drift score attack game.
+Routes: Ulaanbaatar Ring, Open Steppe, Kharkhorin Pass. Weather: Daily, Night, Rain, Dusk, Fog,
+and Dawn. The current release also includes the Steppe Neon splash artwork and App Store asset package.
 
 ```bash
 pnpm install
@@ -11,6 +11,22 @@ pnpm build    # typecheck + production build + JS/font budgets + total-size repo
 pnpm test     # unit tests (rules, save, i18n, level)
 pnpm smoke    # after build: headless browser playthrough + screenshots in shots/
 ```
+
+## GitHub and database deployment
+
+GitHub is source control only. The current managed Webdev deployment already has `server=true`,
+`database=true`, and `/api/*` routed to `server/Dockerfile`. The leaderboard server uses a
+MySQL-compatible `DATABASE_URL`; the secret must stay in the deployment environment and must never
+be committed to GitHub. Use `.env.example` as a shape-only reference.
+
+For a new MySQL-compatible deployment, set `DATABASE_URL`, install the server dependencies, run
+`node server/migrate.mjs`, then start the container or server with `PORT` and `HOST`. The migration
+runner records applied migration hashes and refuses changed migrations. GitHub Pages cannot host
+this backend or database; use Manus, a container host, or another server platform for `/api/*`.
+
+To push this project to the user's GitHub repository, authenticate the GitHub connector first and
+push the `main` branch. Do not replace the current Manus `origin` until the target repository is
+confirmed, because the Manus remote is the managed checkpoint source.
 
 ## Layout
 
