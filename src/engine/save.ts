@@ -12,7 +12,7 @@ export type ScoreEntry = { score: number; at: number; day: string }
 export type Guest = { playerId: string; token: string; name: string }
 
 export type SaveData = {
-  version: 2
+  version: 3
   /** '' = never chosen; the game follows the browser language until the player picks one. */
   locale: Locale | ''
   mapId: MapId
@@ -37,9 +37,9 @@ export const HISTORY_SIZE = 10
 
 export function defaultSave(): SaveData {
   return {
-    version: 2,
+    version: 3,
     locale: '',
-    mapId: 'steppe',
+    mapId: 'ub',
     weatherId: 'auto',
     musicVolume: 0.6,
     sfxVolume: 0.85,
@@ -72,16 +72,16 @@ export function parseSave(raw: string | null): SaveData {
   } catch {
     return base
   }
-  if (data.version !== 1 && data.version !== 2) return base
-  const legacyBeforeRoutes = data.version === 1
+  if (data.version !== 1 && data.version !== 2 && data.version !== 3) return base
+  const legacyBeforeUrban = data.version !== 3
   const bd = (data.bestDay ?? {}) as Record<string, unknown>
   const g = data.guest as Record<string, unknown> | null | undefined
   const guest = g && typeof g === 'object' && typeof g.playerId === 'string' && typeof g.token === 'string' && g.token.length > 10 ? { playerId: str(g.playerId, 80), token: str(g.token, 400), name: str(g.name, 16) } : null
   const history = Array.isArray(data.history) ? data.history : []
   return {
-    version: 2,
+    version: 3,
     locale: data.locale === 'en' || data.locale === 'zh-CN' || data.locale === 'mn' ? data.locale : '',
-    mapId: legacyBeforeRoutes ? 'steppe' : data.mapId === 'ub' || data.mapId === 'steppe' || data.mapId === 'kharkhorin' ? data.mapId : 'steppe',
+    mapId: legacyBeforeUrban ? 'ub' : data.mapId === 'ub' || data.mapId === 'steppe' || data.mapId === 'kharkhorin' ? data.mapId : 'ub',
     weatherId: data.weatherId === 'night' || data.weatherId === 'rain' || data.weatherId === 'dusk' || data.weatherId === 'fog' || data.weatherId === 'dawn' ? data.weatherId : 'auto',
     musicVolume: clamp01(data.musicVolume, base.musicVolume),
     sfxVolume: clamp01(data.sfxVolume, base.sfxVolume),

@@ -413,9 +413,11 @@ export class World {
   private buildCity(): void {
     const r = rng(2026)
     const parts: THREE.BufferGeometry[] = []
+    const roofParts: THREE.BufferGeometry[] = []
     const signs: THREE.BufferGeometry[] = []
     const facade = ['#102f52', '#173c5a', '#24465a', '#3e314d', '#46374f', '#25465b'].map(c => new THREE.Color(c))
     const neon = ['#d63e4d', '#44d8e8', '#ffd166', '#e6b84d', '#8bd17c'].map(c => new THREE.Color(c))
+    const gold = new THREE.Color('#c6923f')
     const addBox = (x: number, z: number, w: number, h: number, d: number, yaw: number, tint: THREE.Color) => {
       const g = new THREE.BoxGeometry(w, h, d).toNonIndexed()
       const uv = g.attributes.uv as THREE.BufferAttribute
@@ -435,6 +437,14 @@ export class World {
       g.translate(x, h / 2, z)
       parts.push(g)
     }
+    const addRoofTrim = (x: number, z: number, w: number, h: number, d: number, tint: THREE.Color) => {
+      const g = new THREE.BoxGeometry(w + 0.5, 0.32, d + 0.5).toNonIndexed()
+      const colors = new Float32Array(g.attributes.position.count * 3)
+      for (let i = 0; i < colors.length / 3; i += 1) colors.set([tint.r, tint.g, tint.b], i * 3)
+      g.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+      g.translate(x, h + 0.16, z)
+      roofParts.push(g)
+    }
     const minX = -170
     const maxX = 230
     const minZ = -90
@@ -452,6 +462,7 @@ export class World {
         const h = near ? 8 + r() * 26 : 14 + r() * 50
         const tint = facade[Math.floor(r() * facade.length)]
         addBox(cx, cz, w, h, d, 0, tint)
+        if (near) addRoofTrim(cx, cz, w, h, d, r() < 0.65 ? gold : neon[Math.floor(r() * neon.length)])
         if (r() < 0.35) addBox(cx + (r() - 0.5) * w * 0.3, cz + (r() - 0.5) * d * 0.3, w * 0.55, h + 4 + r() * 10, d * 0.55, 0, tint)
         if (near && r() < 0.55) {
           const c = neon[Math.floor(r() * neon.length)]
@@ -477,6 +488,7 @@ export class World {
     const city = new THREE.Mesh(mergeGeometries(parts), this.buildingMat)
     city.receiveShadow = true
     this.scene.add(city)
+    if (roofParts.length) this.scene.add(new THREE.Mesh(mergeGeometries(roofParts), this.buildingMat))
     if (signs.length) this.scene.add(new THREE.Mesh(mergeGeometries(signs), new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })))
   }
 
