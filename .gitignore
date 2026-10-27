@@ -3,11 +3,12 @@ dist/
 shots/
 /.manus-webdev/preview-identity.json
 /vendor/source/
-# Assets restored from assets.lock.json
-/assets/share/favicon.png
-/assets/share/og.png
-# Assets restored from assets.lock.json
-/assets/store/drift-king-steppe-neon-icon.png
-/assets/store/drift-king-steppe-neon-splash.png
 
 /DriftKing-SteppeNeon-source.zip
+# Capacitor iOS
+ios/App/Pods/
+ios/App/build/
+ios/App/output/
+ios/DerivedData/
+ios/App/App/public/
+ios/capacitor-cordova-ios-plugins/

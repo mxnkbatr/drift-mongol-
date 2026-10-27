@@ -1,3 +1,4 @@
+import { isProfane, safeName } from './profanity'
 import type { Guest } from '../engine/save'
 
 /**
@@ -36,10 +37,13 @@ export class Leaderboard {
     href = window.location.href,
     private readonly fetcher: Fetcher = (...args) => fetch(...args),
   ) {
+    // Native (Capacitor) builds reach a hosted API via VITE_API_BASE_URL (origin only); with none set
+    // the bundled app plays offline. Web keeps the same-origin path.
     const configuredOrigin = String(import.meta.env.VITE_API_BASE_URL ?? '').trim()
+    const native = /^(capacitor|ionic):/.test(href) || (window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.() === true
     this.base = configuredOrigin
       ? new URL('/api/leaderboards/v1/', `${configuredOrigin.replace(/\/+$/, '')}/`).toString()
-      : new URL('./api/leaderboards/v1/', href).toString()
+      : native ? '' : new URL('./api/leaderboards/v1/', href).toString()
   }
 
   get identity(): Guest | null {
@@ -48,6 +52,7 @@ export class Leaderboard {
 
   private async call<T>(method: string, path: string, body?: unknown, auth = true): Promise<T> {
     if (import.meta.env.DEV && !/[?&]online=1/.test(window.location.search)) throw new OnlineError('offline')
+    if (!this.base) throw new OnlineError('offline')
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), 9000)
     let res: Response
@@ -55,7 +60,7 @@ export class Leaderboard {
       const headers: Record<string, string> = {}
       if (body !== undefined) headers['Content-Type'] = 'application/json'
       if (auth && this.guest) headers.Authorization = `Bearer ${this.guest.token}`
-      res = await this.fetcher(this.base + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: ctrl.signal, credentials: 'same-origin' })
+      res = await this.fetcher(this.base + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: ctrl.signal, credentials: 'omit' })
     } catch {
       throw new OnlineError('offline')
     } finally {
@@ -89,6 +94,7 @@ export class Leaderboard {
 
   async ensureGuest(name: string): Promise<Guest> {
     if (this.guest) return this.guest
+    if (isProfane(name)) throw new OnlineError('name', 'invalid_display_name')
     const data = await this.call<{ playerId: string; token: string; displayName: string }>('POST', 'guests', { displayName: name }, false)
     this.guest = { playerId: data.playerId, token: data.token, name: data.displayName }
     this.saveGuest(this.guest)
@@ -118,6 +124,7 @@ export class Leaderboard {
       return
     }
     if (this.guest.name === name) return
+    if (isProfane(name)) throw new OnlineError('name', 'invalid_display_name')
     const data = await this.call<{ displayName: string }>('PUT', 'players/me', { displayName: name })
     this.guest = { ...this.guest, name: data.displayName }
     this.saveGuest(this.guest)
@@ -142,7 +149,7 @@ export class Leaderboard {
   async board(scope: Scope, limit = 20): Promise<BoardView> {
     const q = scope === 'day' ? `scope=day&day=${new Date().toISOString().slice(0, 10)}` : 'scope=all'
     const data = await this.call<BoardView>('GET', `boards/${BOARD}?${q}&limit=${limit}`, undefined, true)
-    return { scope, total: Number(data.total) || 0, entries: Array.isArray(data.entries) ? data.entries : [], myRank: data.myRank ?? null }
+    return { scope, total: Number(data.total) || 0, entries: Array.isArray(data.entries) ? data.entries.map(e => ({ ...e, displayName: e.me ? e.displayName : safeName(String(e.displayName ?? '')) })) : [], myRank: data.myRank ?? null }
   }
 }
 
