@@ -408,8 +408,8 @@ export class Ui {
       case 'boards': this.openModal('boards'); break
       case 'route': this.openModal('route'); break
       case 'settings': this.openModal('settings'); break
-      case 'map': this.actions.settings({ mapId: b.dataset.map as MapId }); break
-      case 'weather': this.actions.settings({ weatherId: b.dataset.weather as WeatherSelection }); break
+      case 'map': this.closeModal(); this.actions.settings({ mapId: b.dataset.map as MapId }); break
+      case 'weather': this.closeModal(); this.actions.settings({ weatherId: b.dataset.weather as WeatherSelection }); break
       case 'close': this.closeModal(); break
       case 'lang': {
         const next: Locale = this.i18n.locale === 'en' ? 'mn' : this.i18n.locale === 'mn' ? 'zh-CN' : 'en'
