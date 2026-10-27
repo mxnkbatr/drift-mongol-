@@ -86,7 +86,7 @@ export class Ui {
   ) {
     this.root = document.getElementById('ui')!
     this.screens = {
-      boot: el(`<section class="screen boot"><div class="logo small"><span data-t="title.name"></span></div><div class="bar"><i></i></div><p data-t="boot.loading"></p></section>`),
+      boot: el(`<section class="screen boot"><img class="splash-art" src="/store/LaunchScreen-540x1170.jpg" alt="" /><div class="logo small"><span data-t="title.name"></span></div><div class="bar"><i></i></div><p data-t="boot.loading"></p></section>`),
       title: this.buildTitle(),
       hud: this.buildHud(),
       pause: el(`<section class="screen pause"><div class="panel"><h2 class="stroke" data-t="pause.title"></h2>

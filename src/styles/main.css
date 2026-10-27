@@ -382,3 +382,13 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
 .route-card small { display: block; margin-top: 6px; color: #d8e9ec; font-weight: 700; line-height: 1.2; }
 .route-card.on { border-color: var(--gold); background: linear-gradient(145deg, rgba(155,76,47,.98), rgba(39,42,86,.98)); box-shadow: 0 4px 0 var(--gold); }
 @media (max-width: 720px) { .route-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .route-card b { font-size: calc(var(--u) * 1.55); } }
+
+/* ─── Steppe Neon splash boot ──────────────────────────────────────── */
+.boot { background: #071a38; overflow: hidden; }
+.boot::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(40,112,196,.3), transparent 55%); pointer-events: none; }
+.boot .splash-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: .9; filter: saturate(1.05) contrast(1.04); }
+.boot .logo.small, .boot .bar, .boot p { position: relative; z-index: 1; }
+.boot .logo.small { display: none; }
+.boot .bar { border-color: #071a38; background: rgba(7,26,56,.8); box-shadow: 0 4px 0 #071a38; }
+.boot .bar i { background: linear-gradient(90deg, #e1a640, #d64c43, #2fc9e4); }
+.boot p { padding: 6px 14px; border-radius: 999px; background: rgba(7,26,56,.78); color: #fff4d8; text-shadow: 0 2px 0 #071a38; }
