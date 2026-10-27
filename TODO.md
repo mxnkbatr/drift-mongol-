@@ -3,12 +3,12 @@
 ## Supplied Drift King source integrated — complete
 - Use the complete supplied published-version source archive as the remix foundation while keeping the initialized game-3d/Three.js runtime compatible.
 - Preserve the 60-second drift score-attack loop, drift scoring, combo behavior, daily conditions, restart flow, and local result persistence.
-- Preserve the source game's English and Simplified Chinese localization coverage and ensure every visible string remains localized.
+- Preserve the source game's English and Simplified Chinese localization coverage, add complete Mongolian localization, and ensure every visible string remains localized.
 
 ## Retro arcade remix delivered — complete
 - Replace inherited/source presentation with a cohesive retro arcade treatment: CRT-inspired overlay, chunky display typography, neon dusk palette, scanline/pixel accents, readable HUD, and punchy drift feedback.
 - Update the visible game title, browser title, favicon, sharing metadata, and game-specific sharing artwork to Drift King Retro without deleting source credits or licenses.
-- Keep driving readability and responsive controls on desktop and touch-sized layouts.
+- Keep driving readability and responsive controls on desktop and touch-sized layouts, including landscape phone touch controls for steering, gas, brake, handbrake, and reset.
 
 ## Online leaderboard and hybrid backend retained — complete
 - Preserve the authored guest online leaderboard flow, including daily/all-time standings, run tickets, plausible-score validation, retry/error states, and honest unavailable/offline behavior, without removing offline play.

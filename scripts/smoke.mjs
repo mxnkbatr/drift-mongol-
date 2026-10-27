@@ -119,18 +119,27 @@ try {
   await zp.screenshot({ path: `${out}/smoke-04-boards-zh.png` })
   await zh.close()
 
+  // A Mongolian browser gets the new native-language title and controls.
+  const mn = await browser.newContext({ viewport: { width: 1280, height: 720 }, locale: 'mn-MN' })
+  const mp = await openGame(mn, errors)
+  if ((await mp.evaluate(() => document.documentElement.lang)) !== 'mn') throw new Error('Mongolian browser language not detected')
+  if (!/ДРИФТЭЭ ЭХЛҮҮЛ/.test(await mp.textContent('[data-act="play"]'))) throw new Error('Mongolian title not shown')
+  await mp.screenshot({ path: `${out}/smoke-05-title-mn.png` })
+  await mn.close()
+
   // Phone in landscape: touch controls appear and the gas button drives the car.
-  const phone = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'zh-CN' })
+  const phone = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'mn-MN' })
   const pp = await openGame(phone, errors)
   await pp.tap('[data-act="play"]', { force: true })
   await pp.waitForSelector('#ui[data-screen="hud"]')
   await pp.waitForTimeout(600)
   if (!(await pp.isVisible('.touch [data-c="throttle"]'))) throw new Error('touch controls not visible on phone')
-  await pp.screenshot({ path: `${out}/smoke-05-phone-hud.png` })
+  if (!/ХИЙ/.test(await pp.textContent('.touch [data-c="throttle"]'))) throw new Error('Mongolian touch labels not shown')
+  await pp.screenshot({ path: `${out}/smoke-06-phone-hud.png` })
   await phone.close()
 
   if (errors.length) throw new Error(`console errors:\n  ${errors.join('\n  ')}`)
-  console.log(`smoke: OK — drove ${moved.toFixed(1)} m, bot run ${end.score} pts, restart, zh/en and phone verified`)
+  console.log(`smoke: OK — drove ${moved.toFixed(1)} m, bot run ${end.score} pts, restart, mn/zh/en and phone verified`)
   await browser.close()
   cleanup()
   process.exit(0)

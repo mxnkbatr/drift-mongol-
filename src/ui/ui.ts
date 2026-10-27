@@ -126,7 +126,7 @@ export class Ui {
   private buildTitle(): HTMLElement {
     return el(`<section class="screen title">
       <div class="title-left">
-        <div class="logo"><span class="zh">漂移之王 · 复古</span><span class="en">DRIFT KING // RETRO</span></div>
+        <div class="logo"><span class="mn">ДРИФТИЙН ХААН · РЕТРО</span><span class="zh">漂移之王 · 复古</span><span class="en">DRIFT KING // RETRO</span></div>
         <p class="tag" data-t="title.tag"></p>
         <button class="btn play primary" data-act="play"><span data-t="title.play"></span><small data-t="title.press"></small></button>
         <div class="how">
@@ -213,7 +213,7 @@ export class Ui {
       <div class="set"><span data-t="settings.quality"></span><div class="seg">
         <button data-q="low" data-t="settings.low"></button><button data-q="medium" data-t="settings.medium"></button><button data-q="high" data-t="settings.high"></button></div></div>
       <label class="set check"><span data-t="settings.motion"></span><input type="checkbox" data-set="reducedMotion" /></label>
-      <div class="set"><span data-t="settings.language"></span><div class="seg"><button data-l="zh-CN">中文</button><button data-l="en">English</button></div></div>
+      <div class="set"><span data-t="settings.language"></span><div class="seg"><button data-l="mn">Монгол</button><button data-l="zh-CN">中文</button><button data-l="en">English</button></div></div>
       <button class="btn primary" data-act="close" data-t="common.close"></button>
     </div></div>`)
     node.addEventListener('input', e => {
@@ -381,7 +381,11 @@ export class Ui {
       case 'boards': this.openModal('boards'); break
       case 'settings': this.openModal('settings'); break
       case 'close': this.closeModal(); break
-      case 'lang': this.actions.settings({ locale: this.i18n.locale === 'en' ? 'zh-CN' : 'en' }); break
+      case 'lang': {
+        const next: Locale = this.i18n.locale === 'en' ? 'mn' : this.i18n.locale === 'mn' ? 'zh-CN' : 'en'
+        this.actions.settings({ locale: next })
+        break
+      }
       case 'tab-day': void this.loadBoard('day'); break
       case 'tab-all': void this.loadBoard('all'); break
       case 'submit': {

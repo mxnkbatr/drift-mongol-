@@ -355,3 +355,20 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   body::before { opacity: 0.12; }
 }
+
+/* ─── Mongolian locale and phone-first touch polish ─────────────────── */
+.logo .mn { display: none; }
+html[lang='en'] .logo .mn,
+html[lang='en'] .logo .zh { display: none; }
+html[lang='mn'] .title-left { max-width: 52%; gap: calc(var(--u) * 1.1); }
+html[lang='mn'] .logo .mn { display: inline; font-size: calc(var(--u) * 4.8); color: var(--gold); letter-spacing: 0.02em; }
+html[lang='mn'] .btn.play { font-size: calc(var(--u) * 2.8); padding: calc(var(--u) * 1.1) calc(var(--u) * 3.2); }
+html[lang='mn'] .logo .zh,
+html[lang='mn'] .logo .en { display: none; }
+html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.09em 0.12em 0 var(--ink); }
+@media (max-height: 520px) and (pointer: coarse) {
+  .touch button { min-width: 58px; min-height: 58px; }
+  .touch .gas { min-width: 88px; }
+  .touch .t-reset { min-width: 48px; min-height: 48px; }
+  html[lang='mn'] .logo .mn { font-size: calc(var(--u) * 4.6); }
+}
