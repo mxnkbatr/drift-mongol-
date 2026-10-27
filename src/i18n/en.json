@@ -156,5 +156,6 @@
   "map.kharkhorin.d": "Ancient stones, long rhythm, hard apexes",
   "title.mode": "ARCADE RUN",
   "title.duration": "60 SEC",
-  "title.quickHelp": "THROTTLE + HANDBRAKE"
+  "title.quickHelp": "THROTTLE + HANDBRAKE",
+  "boot.credit": "Developed by Munkhbaatar Dorjsuren"
 }

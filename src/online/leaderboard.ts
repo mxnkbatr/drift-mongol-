@@ -36,7 +36,10 @@ export class Leaderboard {
     href = window.location.href,
     private readonly fetcher: Fetcher = (...args) => fetch(...args),
   ) {
-    this.base = new URL('./api/leaderboards/v1/', href).toString()
+    const configuredOrigin = String(import.meta.env.VITE_API_BASE_URL ?? '').trim()
+    this.base = configuredOrigin
+      ? new URL('/api/leaderboards/v1/', `${configuredOrigin.replace(/\/+$/, '')}/`).toString()
+      : new URL('./api/leaderboards/v1/', href).toString()
   }
 
   get identity(): Guest | null {

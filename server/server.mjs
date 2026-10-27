@@ -22,6 +22,21 @@ const idPattern = /^[a-zA-Z0-9_-]{1,64}$/;
 const uuidPattern = /^[0-9a-f-]{36}$/;
 const dayPattern = /^\d{4}-\d{2}-\d{2}$/;
 const prefix = '/api/leaderboards/v1';
+const corsOrigins = new Set(['capacitor://localhost', ...String(process.env.GAME_CORS_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean)]);
+function corsAllowed(req) {
+  const origin = String(req.headers.origin || '');
+  return !origin || corsOrigins.has(origin);
+}
+function applyCors(req, res) {
+  const origin = String(req.headers.origin || '');
+  if (!origin || !corsOrigins.has(origin)) return false;
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  return true;
+}
 const send = (res, status, data) => {
   if (res.destroyed || res.writableEnded) return;
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
@@ -123,7 +138,7 @@ async function handle(req, res) {
   const url = new URL(req.url, 'http://game-api');
   if (url.pathname === '/api/health' && req.method === 'GET') return send(res, 200, { status: 'ok' });
   if (!url.pathname.startsWith(`${prefix}/`)) fail(404, 'not_found');
-  if (req.headers['sec-fetch-site'] === 'cross-site') fail(403, 'cross_origin_request');
+  if (req.headers['sec-fetch-site'] === 'cross-site' && !corsAllowed(req)) fail(403, 'cross_origin_request');
   if (url.pathname === `${prefix}/health` && req.method === 'GET') {
     await assertDatabaseReady(db, namespace, backendContract);
     await db.execute('SELECT stats_json FROM game_lb_runs LIMIT 0');
@@ -196,6 +211,12 @@ async function handle(req, res) {
   fail(404, 'not_found');
 }
 const server = http.createServer((req, res) => {
+  const allowed = applyCors(req, res);
+  if (req.method === 'OPTIONS') {
+    if (!allowed) return send(res, 403, { error: 'cross_origin_request' });
+    res.writeHead(204);
+    return res.end();
+  }
   db.run(req, res, () => handle(req, res)).catch((error) => {
     if (res.destroyed || res.writableEnded) return;
     send(res, error.status || 503, { error: error.code && error.status ? error.code : 'leaderboard_unavailable' });

@@ -1,0 +1,8 @@
+// Copy to the generated iOS project as a local release config; do not commit real signing values.
+PRODUCT_BUNDLE_IDENTIFIER = mn.driftking.steppe
+PRODUCT_NAME = Drift King: Steppe Neon
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+IPHONEOS_DEPLOYMENT_TARGET = 15.0
+DEVELOPMENT_TEAM = YOUR_APPLE_TEAM_ID
+SWIFT_VERSION = 5.0
