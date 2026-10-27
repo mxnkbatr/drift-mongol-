@@ -4,6 +4,7 @@
  */
 import { CONFIG } from './config'
 import type { Corner, TrackSample } from './track'
+import type { MapId } from '../engine/save'
 
 export type ConditionId = 'night' | 'rain' | 'dusk' | 'fog' | 'dawn'
 
@@ -69,13 +70,13 @@ export function rng(seed: number): () => number {
 
 export type ClipSpot = { index: number; x: number; z: number; side: 1 | -1; lateral: number }
 
-export type Daily = { day: string; seed: number; condition: Condition; clips: ClipSpot[] }
+export type Daily = { day: string; seed: number; condition: Condition; clips: ClipSpot[]; mapId: MapId }
 
 /**
  * Pick the day's condition and clip zones. Condition cycles so consecutive days always differ;
  * clip zones sit on the outside (or occasionally the inside apex) of a seeded subset of corners.
  */
-export function dailyFor(day: string, track: TrackSample[], corners: Corner[]): Daily {
+export function dailyFor(day: string, track: TrackSample[], corners: Corner[], mapId: MapId = 'ub'): Daily {
   const seed = hashSeed(`drift-king:${day}`)
   const r = rng(seed)
   const dayNumber = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000)
@@ -94,5 +95,5 @@ export function dailyFor(day: string, track: TrackSample[], corners: Corner[]): 
     const lateral = side * (side === outside ? 5.2 : 4.4)
     return { index: c.index, x: p.x + p.nx * lateral, z: p.z + p.nz * lateral, side, lateral }
   })
-  return { day, seed, condition, clips }
+  return { day, seed, condition, clips, mapId }
 }

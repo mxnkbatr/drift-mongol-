@@ -2,7 +2,11 @@
  * Versioned local save. Everything the player keeps between sessions lives in one JSON record so
  * it is easy to migrate. Corrupt or foreign data falls back to defaults instead of crashing.
  */
+import type { ConditionId } from '../game/daily'
+
 export type Locale = 'en' | 'zh-CN' | 'mn'
+export type MapId = 'ub' | 'steppe' | 'kharkhorin'
+export type WeatherSelection = 'auto' | ConditionId
 export type Quality = 'low' | 'medium' | 'high'
 export type ScoreEntry = { score: number; at: number; day: string }
 export type Guest = { playerId: string; token: string; name: string }
@@ -11,6 +15,8 @@ export type SaveData = {
   version: 1
   /** '' = never chosen; the game follows the browser language until the player picks one. */
   locale: Locale | ''
+  mapId: MapId
+  weatherId: WeatherSelection
   musicVolume: number
   sfxVolume: number
   muted: boolean
@@ -33,6 +39,8 @@ export function defaultSave(): SaveData {
   return {
     version: 1,
     locale: '',
+    mapId: 'ub',
+    weatherId: 'auto',
     musicVolume: 0.6,
     sfxVolume: 0.85,
     muted: false,
@@ -72,6 +80,8 @@ export function parseSave(raw: string | null): SaveData {
   return {
     version: 1,
     locale: data.locale === 'en' || data.locale === 'zh-CN' || data.locale === 'mn' ? data.locale : '',
+    mapId: data.mapId === 'steppe' || data.mapId === 'kharkhorin' ? data.mapId : 'ub',
+    weatherId: data.weatherId === 'night' || data.weatherId === 'rain' || data.weatherId === 'dusk' || data.weatherId === 'fog' || data.weatherId === 'dawn' ? data.weatherId : 'auto',
     musicVolume: clamp01(data.musicVolume, base.musicVolume),
     sfxVolume: clamp01(data.sfxVolume, base.sfxVolume),
     muted: data.muted === true,

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "title": "Drift King Retro",
-  "description": "A 60-second neon arcade drift score attack with daily conditions, Mongolian, English, and Simplified Chinese UI, and a shared leaderboard.",
+  "title": "Drift King: Steppe Neon",
+  "description": "A 60-second Mongolian Steppe Neon drift score attack with daily conditions, three route presets, Mongolian, English, and Simplified Chinese UI, and a shared leaderboard.",
   "defaultCaptions": {
-    "x": "Drift King Retro: 60 seconds to own the neon night.",
-    "facebook": "Drift King Retro — chain clean slides and climb the board.",
-    "reddit": "A retro arcade 60-second drift score attack with daily conditions.",
-    "discord": "Can you beat my Drift King Retro score?"
+    "x": "Drift King: Steppe Neon — 60 seconds to own the golden night.",
+    "facebook": "Drift King: Steppe Neon — chain clean slides across Mongolia and climb the board.",
+    "reddit": "A Mongolian Steppe Neon 60-second drift score attack with route and weather selection.",
+    "discord": "Can you beat my Steppe Neon drift score?"
   },
   "assets": {
     "og": "assets/share/og.png",

@@ -79,7 +79,7 @@ export class Game {
     public tutorial: boolean,
   ) {
     this.physics = new Physics(0)
-    this.world = new World(this.physics, renderer.shadowMapSize)
+    this.world = new World(this.physics, renderer.shadowMapSize, daily.mapId)
     this.world.applyCondition(daily.condition, renderer.gl)
     const s = this.world.spawn
     this.car = new Car(this.physics, new THREE.Vector3(s.x, 0, s.z), s.yaw)

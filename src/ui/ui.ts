@@ -1,15 +1,16 @@
 import type { Audio } from '../engine/audio'
 import type { I18n } from '../engine/i18n'
 import type { Input, TouchControl } from '../engine/input'
-import type { Locale, Quality, SaveData, SaveStore } from '../engine/save'
+import type { Locale, MapId, Quality, SaveData, SaveStore, WeatherSelection } from '../engine/save'
 import type { Daily } from '../game/daily'
 import type { Hint, HudState } from '../game/game'
 import { formatClock, type DriftEvent, type RunState } from '../game/rules'
 import type { Challenge } from '../online/challenge'
 import type { BoardView, Scope } from '../online/leaderboard'
+import { MAPS } from '../game/track'
 
 export type Screen = 'boot' | 'title' | 'hud' | 'pause' | 'results'
-export type Modal = 'boards' | 'share' | 'settings' | null
+export type Modal = 'boards' | 'share' | 'settings' | 'route' | null
 
 export type UiActions = {
   play(): void
@@ -106,6 +107,7 @@ export class Ui {
         <p class="note" data-ref="shareNote"></p>
         <button class="btn ghost" data-act="close" data-t="common.close"></button></div></div>`),
       settings: this.buildSettings(),
+      route: this.buildRoute(),
     }
     this.popups = el(`<div class="popups"></div>`)
     this.hintEl = el(`<div class="hint"></div>`)
@@ -126,7 +128,7 @@ export class Ui {
   private buildTitle(): HTMLElement {
     return el(`<section class="screen title">
       <div class="title-left">
-        <div class="logo"><span class="mn">ДРИФТИЙН ХААН · РЕТРО</span><span class="zh">漂移之王 · 复古</span><span class="en">DRIFT KING // RETRO</span></div>
+        <div class="logo"><span class="mn">ДРИФТИЙН ХААН · ТАЛЫН НЕОН</span><span class="zh">漂移之王 · 草原霓虹</span><span class="en">DRIFT KING // STEPPE NEON</span></div>
         <p class="tag" data-t="title.tag"></p>
         <button class="btn play primary" data-act="play"><span data-t="title.play"></span><small data-t="title.press"></small></button>
         <div class="how">
@@ -143,6 +145,7 @@ export class Ui {
         <div class="best-card" data-ref="best"></div>
         <div class="title-buttons">
           <button class="btn" data-act="boards" data-t="title.boards"></button>
+          <button class="btn" data-act="route" data-t="title.route"></button>
           <button class="btn" data-act="settings" data-t="title.settings"></button>
           <button class="btn ghost small" data-act="lang" data-t="title.lang"></button>
         </div>
@@ -231,6 +234,22 @@ export class Ui {
     return node
   }
 
+  private buildRoute(): HTMLElement {
+    const maps = Object.values(MAPS).map(m => `<button class="route-card" data-act="map" data-map="${m.id}"><b data-t="${m.nameKey}"></b><small data-t="${m.descKey}"></small></button>`).join('')
+    const weather: WeatherSelection[] = ['auto', 'night', 'rain', 'dusk', 'fog', 'dawn']
+    const skies = weather.map(id => {
+      const name = id === 'auto' ? 'weather.auto' : `cond.${id}`
+      const desc = id === 'auto' ? 'weather.auto.d' : `cond.${id}.d`
+      return `<button class="route-card weather-card" data-act="weather" data-weather="${id}"><b data-t="${name}"></b><small data-t="${desc}"></small></button>`
+    }).join('')
+    return el(`<div class="modal route"><div class="panel wide">
+      <h2 class="stroke" data-t="route.title"></h2>
+      <h3 data-t="route.maps"></h3><div class="route-grid">${maps}</div>
+      <h3 data-t="route.weather"></h3><div class="route-grid">${skies}</div>
+      <button class="btn ghost" data-act="close" data-t="common.close"></button>
+    </div></div>`)
+  }
+
   private buildTouch(): HTMLElement {
     const node = el(`<div class="touch">
       <div class="t-left"><button data-c="left">◀</button><button data-c="right">▶</button></div>
@@ -297,6 +316,7 @@ export class Ui {
     if (this.endRun) this.renderResults()
     if (this.hintKey) this.hint(this.hintKey)
     this.refreshSettings()
+    this.refreshRoute()
   }
 
   refreshTitle(): void {
@@ -314,6 +334,12 @@ export class Ui {
     })
     s.querySelectorAll<HTMLElement>('[data-q]').forEach(b => b.classList.toggle('on', b.dataset.q === d.quality))
     s.querySelectorAll<HTMLElement>('[data-l]').forEach(b => b.classList.toggle('on', b.dataset.l === this.i18n.locale))
+  }
+
+  refreshRoute(): void {
+    const r = this.modals.route
+    r.querySelectorAll<HTMLElement>('[data-map]').forEach(b => b.classList.toggle('on', b.dataset.map === this.save.data.mapId))
+    r.querySelectorAll<HTMLElement>('[data-weather]').forEach(b => b.classList.toggle('on', b.dataset.weather === this.save.data.weatherId))
   }
 
   // ─── screens ──────────────────────────────────────────────────────────
@@ -345,6 +371,7 @@ export class Ui {
     this.modals[m].classList.add('on')
     if (m === 'boards') void this.loadBoard(this.boardScope)
     if (m === 'settings') this.refreshSettings()
+    if (m === 'route') this.refreshRoute()
   }
 
   closeModal(): void {
@@ -379,7 +406,10 @@ export class Ui {
       case 'quit': this.closeModal(); this.actions.quit(); break
       case 'pause': window.dispatchEvent(new Event('game:pause')); break
       case 'boards': this.openModal('boards'); break
+      case 'route': this.openModal('route'); break
       case 'settings': this.openModal('settings'); break
+      case 'map': this.actions.settings({ mapId: b.dataset.map as MapId }); break
+      case 'weather': this.actions.settings({ weatherId: b.dataset.weather as WeatherSelection }); break
       case 'close': this.closeModal(); break
       case 'lang': {
         const next: Locale = this.i18n.locale === 'en' ? 'mn' : this.i18n.locale === 'mn' ? 'zh-CN' : 'en'

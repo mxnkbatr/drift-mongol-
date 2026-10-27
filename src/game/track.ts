@@ -7,11 +7,29 @@ export type Vec2 = { x: number; z: number }
 export type TrackSample = { x: number; z: number; tx: number; tz: number; nx: number; nz: number; s: number; curv: number }
 export type Corner = { index: number; s: number; curv: number; dir: 1 | -1 }
 
-/** Control points of the "Neon Loop" circuit (metres). Start/finish sits on the long bottom straight. */
+import type { MapId } from '../engine/save'
+
+/** Control points of the original circuit (metres). Start/finish sits on the long bottom straight. */
 export const CONTROL_POINTS: [number, number][] = [
   [0, 0], [70, 0], [120, 8], [150, 40], [145, 85], [110, 100], [80, 120], [85, 160], [125, 175], [160, 205], [150, 250],
   [100, 265], [45, 250], [5, 262], [-45, 250], [-70, 210], [-45, 175], [-55, 130], [-95, 110], [-110, 65], [-80, 20], [-40, 4],
 ]
+
+/** Public map catalog used by the title-screen route picker. */
+export const MAPS: Record<MapId, { id: MapId; nameKey: string; descKey: string }> = {
+  ub: { id: 'ub', nameKey: 'map.ub', descKey: 'map.ub.d' },
+  steppe: { id: 'steppe', nameKey: 'map.steppe', descKey: 'map.steppe.d' },
+  kharkhorin: { id: 'kharkhorin', nameKey: 'map.kharkhorin', descKey: 'map.kharkhorin.d' },
+}
+
+const STEPPE_POINTS: [number, number][] = CONTROL_POINTS.map(([x, z], i) => [x * 1.18 + (i % 2 ? 6 : -4), z * 0.72 - 24])
+const KHARKHORIN_POINTS: [number, number][] = CONTROL_POINTS.map(([x, z], i) => [x * 0.84 - 14, z * 1.12 + (i % 3) * 5])
+
+export function controlPointsForMap(mapId: MapId): [number, number][] {
+  if (mapId === 'steppe') return STEPPE_POINTS
+  if (mapId === 'kharkhorin') return KHARKHORIN_POINTS
+  return CONTROL_POINTS
+}
 export const ROAD_WIDTH = 16
 export const HALF_WIDTH = ROAD_WIDTH / 2
 

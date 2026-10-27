@@ -1,6 +1,6 @@
 {
-  "title.name": "DRIFT KING // RETRO",
-  "title.tag": "60 seconds. Slide sideways. Own the neon night.",
+  "title.name": "DRIFT KING · STEPPE NEON",
+  "title.tag": "60 seconds. Slide the steppe. Own the golden night.",
   "title.play": "START DRIFTING",
   "title.press": "SPACE / ENTER / Ⓐ",
   "how.drive": "Drive",
@@ -141,5 +141,17 @@
   "touch.hb": "HANDBRAKE",
   "boot.loading": "Warming up the tyres…",
   "rotate": "Rotate to landscape to race",
-  "how.touch": "Touch: ◀ ▶ steer · GAS · BRAKE · HANDBRAKE"
+  "how.touch": "Touch: ◀ ▶ steer · GAS · BRAKE · HANDBRAKE",
+  "title.route": "ROUTES",
+  "route.title": "CHOOSE YOUR ROUTE",
+  "route.maps": "MAP",
+  "route.weather": "WEATHER",
+  "weather.auto": "DAILY WEATHER",
+  "weather.auto.d": "The daily condition rotates with the shared challenge",
+  "map.ub": "Ulaanbaatar Ring",
+  "map.ub.d": "City lights, tight walls, familiar line",
+  "map.steppe": "Open Steppe",
+  "map.steppe.d": "Wide sweepers, dust, blue horizon",
+  "map.kharkhorin": "Kharkhorin Pass",
+  "map.kharkhorin.d": "Ancient stones, long rhythm, hard apexes"
 }

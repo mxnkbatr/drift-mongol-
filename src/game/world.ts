@@ -5,6 +5,7 @@ import { RAPIER } from '../engine/physics'
 import { radialTexture } from './car'
 import { type Condition, rng } from './daily'
 import { buildTrack, findCorners, HALF_WIDTH, type Corner, type TrackSample } from './track'
+import type { MapId } from '../engine/save'
 
 /** Barrier face distance from the centreline: road half width plus a curb/runoff strip. */
 export const WALL = HALF_WIDTH + 1.4
@@ -91,7 +92,7 @@ function bannerTexture(): THREE.CanvasTexture {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillStyle = '#ffd35c'
-    ctx.fillText('DRIFT KING  ·  漂移之王  ·  DRIFT KING', 512, 66)
+    ctx.fillText('ДРИФТИЙН ХААН  ·  ТАЛЫН НЕОН  ·  DRIFT KING', 512, 66)
   })
 }
 
@@ -121,7 +122,7 @@ export class World {
   private condition?: Condition
   private time = 0
 
-  constructor(private readonly physics: Physics, shadowMapSize: number) {
+  constructor(private readonly physics: Physics, shadowMapSize: number, mapId: MapId = 'ub') {
     this.track = buildTrack()
     this.corners = findCorners(this.track)
     const t0 = this.track[4]
@@ -155,7 +156,8 @@ export class World {
     this.buildBarriers()
     const windows = windowTexture()
     this.buildingMat = new THREE.MeshStandardMaterial({ map: windows, emissiveMap: windows, emissive: '#ffffff', emissiveIntensity: 1.2, vertexColors: true, roughness: 0.85, flatShading: true })
-    this.buildCity()
+    if (mapId === 'ub') this.buildCity()
+    else this.buildSteppe(mapId)
     this.bulbMat = new THREE.MeshBasicMaterial({ color: '#ffe3a3', toneMapped: false })
     this.poolMat = new THREE.MeshBasicMaterial({ map: radialTexture('rgba(255,214,160,0.6)', 'rgba(255,200,130,0)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })
     this.buildLamps()
@@ -359,12 +361,61 @@ export class World {
     return Math.sqrt(best)
   }
 
+  /** Steppe Neon backdrop: rounded hills, gers, dust markers, and optional Kharkhorin stones. */
+  private buildSteppe(mapId: MapId): void {
+    const r = rng(mapId === 'steppe' ? 720 : 721)
+    const hillMat = new THREE.MeshStandardMaterial({ color: mapId === 'steppe' ? '#274866' : '#3b365b', roughness: 1, flatShading: true })
+    const grassMat = new THREE.MeshStandardMaterial({ color: mapId === 'steppe' ? '#526b50' : '#4d5365', roughness: 1, flatShading: true })
+    const gerMat = new THREE.MeshStandardMaterial({ color: '#e4c892', roughness: 0.95, flatShading: true })
+    const roofMat = new THREE.MeshStandardMaterial({ color: '#b74445', roughness: 0.85, flatShading: true })
+    for (let i = 0; i < 34; i += 1) {
+      const a = (i / 34) * Math.PI * 2 + r() * 0.25
+      const radius = 190 + r() * 180
+      const hill = new THREE.Mesh(new THREE.ConeGeometry(24 + r() * 36, 18 + r() * 40, 7), hillMat)
+      hill.position.set(25 + Math.cos(a) * radius, 8 + r() * 12, 130 + Math.sin(a) * radius)
+      hill.rotation.y = r() * Math.PI
+      this.scene.add(hill)
+    }
+    for (let i = 0; i < 10; i += 1) {
+      const a = r() * Math.PI * 2
+      const radius = 65 + r() * 150
+      const x = 25 + Math.cos(a) * radius
+      const z = 130 + Math.sin(a) * radius
+      if (this.distanceToTrack(x, z) < 26) continue
+      const ger = new THREE.Group()
+      ger.add(new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 2.3, 12), gerMat))
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(4.4, 2.2, 12), roofMat)
+      roof.position.y = 2.25
+      ger.add(roof)
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.35, 0.08), new THREE.MeshBasicMaterial({ color: '#251b2d' }))
+      door.position.set(0, 0.7, 3.58)
+      ger.add(door)
+      ger.position.set(x, 0, z)
+      ger.rotation.y = r() * Math.PI * 2
+      this.scene.add(ger)
+    }
+    const grass = new THREE.Mesh(new THREE.PlaneGeometry(1900, 1900).rotateX(-Math.PI / 2), grassMat)
+    grass.position.set(25, -0.03, 130)
+    grass.receiveShadow = true
+    this.scene.add(grass)
+    if (mapId === 'kharkhorin') {
+      const stoneMat = new THREE.MeshStandardMaterial({ color: '#8d857b', roughness: 1, flatShading: true })
+      for (let i = 0; i < 8; i += 1) {
+        const a = (i / 8) * Math.PI * 2
+        const stone = new THREE.Mesh(new THREE.BoxGeometry(2.6 + r() * 2, 9 + r() * 9, 1.5 + r()), stoneMat)
+        stone.position.set(25 + Math.cos(a) * 82, stone.geometry.parameters.height / 2, 130 + Math.sin(a) * 82)
+        stone.rotation.y = a + r() * 0.4
+        this.scene.add(stone)
+      }
+    }
+  }
+
   private buildCity(): void {
     const r = rng(2026)
     const parts: THREE.BufferGeometry[] = []
     const signs: THREE.BufferGeometry[] = []
-    const facade = ['#2b2a4a', '#35305c', '#253a4f', '#3b2d4f', '#2f3b5c', '#433a5e'].map(c => new THREE.Color(c))
-    const neon = ['#ff3df2', '#37f7ff', '#ffd35c', '#6bff8f', '#ff7a45'].map(c => new THREE.Color(c))
+    const facade = ['#102f52', '#173c5a', '#24465a', '#3e314d', '#46374f', '#25465b'].map(c => new THREE.Color(c))
+    const neon = ['#d63e4d', '#44d8e8', '#ffd166', '#e6b84d', '#8bd17c'].map(c => new THREE.Color(c))
     const addBox = (x: number, z: number, w: number, h: number, d: number, yaw: number, tint: THREE.Color) => {
       const g = new THREE.BoxGeometry(w, h, d).toNonIndexed()
       const uv = g.attributes.uv as THREE.BufferAttribute

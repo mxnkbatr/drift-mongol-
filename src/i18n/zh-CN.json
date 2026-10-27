@@ -1,6 +1,6 @@
 {
-  "title.name": "漂移之王 · 复古",
-  "title.tag": "60 秒霓虹漂移，横着冲上排行榜",
+  "title.name": "漂移之王 · 草原霓虹",
+  "title.tag": "60秒。横滑草原。夺下金色之夜。",
   "title.play": "开始漂移",
   "title.press": "空格 / 回车 / Ⓐ 键",
   "how.drive": "驾驶",
@@ -141,5 +141,17 @@
   "touch.hb": "手刹",
   "boot.loading": "正在热胎…",
   "rotate": "请横屏游玩",
-  "how.touch": "触屏：◀ ▶ 转向 · 油门 · 刹车 · 手刹"
+  "how.touch": "触屏：◀ ▶ 转向 · 油门 · 刹车 · 手刹",
+  "title.route": "路线",
+  "route.title": "选择路线",
+  "route.maps": "地图",
+  "route.weather": "天气",
+  "weather.auto": "每日天气",
+  "weather.auto.d": "天气随共享挑战每日轮换",
+  "map.ub": "乌兰巴托环线",
+  "map.ub.d": "城市灯光、窄墙与熟悉的走线",
+  "map.steppe": "无垠草原",
+  "map.steppe.d": "宽阔弯道、飞扬尘土与蓝色地平线",
+  "map.kharkhorin": "哈拉和林山口",
+  "map.kharkhorin.d": "古老石阵、长节奏与刁钻弯心"
 }

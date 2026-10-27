@@ -4,6 +4,10 @@
     "share": {
       "name": "Share",
       "order": 10
+    },
+    "store": {
+      "name": "Store",
+      "order": 20
     }
   },
   "bundles": {},
@@ -21,6 +25,20 @@
       "size": 5216579,
       "assetType": "image",
       "groupId": "share"
+    },
+    "assets/store/drift-king-steppe-neon-icon.png": {
+      "path": "/manus-storage/game/sha256/cb631b66a7fe1f850cb4e6702155b6c1a29afbc974c4dfc293deb3d3071d0a15.png",
+      "sha256": "sha256:cb631b66a7fe1f850cb4e6702155b6c1a29afbc974c4dfc293deb3d3071d0a15",
+      "size": 5533483,
+      "assetType": "image",
+      "groupId": "store"
+    },
+    "assets/store/drift-king-steppe-neon-splash.png": {
+      "path": "/manus-storage/game/sha256/715eb9ddec468b057c383fddae7327f29ab143122775a9a36db9b8a55c5d806b.png",
+      "sha256": "sha256:715eb9ddec468b057c383fddae7327f29ab143122775a9a36db9b8a55c5d806b",
+      "size": 6501818,
+      "assetType": "image",
+      "groupId": "store"
     }
   }
 }

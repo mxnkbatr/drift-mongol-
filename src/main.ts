@@ -7,7 +7,7 @@ import { insertScore, SAVE_KEY, SaveStore, type SaveData } from './engine/save'
 import { CONDITIONS, dailyFor, dayKey, type ConditionId } from './game/daily'
 import type { Game } from './game/game'
 import type { RunState } from './game/rules'
-import { buildTrack, findCorners } from './game/track'
+import { buildTrack, controlPointsForMap, findCorners } from './game/track'
 import { challengeUrl, cleanName, decodeChallenge } from './online/challenge'
 import { beatenPercent, Leaderboard, OnlineError, type RunStats } from './online/leaderboard'
 import { canvasBlob, drawShareCard } from './online/share'
@@ -27,12 +27,13 @@ async function boot(): Promise<void> {
   const audio = new Audio()
   const params = new URLSearchParams(window.location.search)
   const target = decodeChallenge(params.get('vs'))
-  // The daily condition is fixed by the UTC date, so everyone drives the same run today.
-  const track = buildTrack()
-  const baseDaily = dailyFor(dayKey(), track, findCorners(track))
+  // The daily condition is fixed by the UTC date; map/weather selection is a local free-run remix.
+  const track = buildTrack(controlPointsForMap(save.data.mapId))
+  const baseDaily = dailyFor(dayKey(), track, findCorners(track), save.data.mapId)
+  const selectedCondition = save.data.weatherId === 'auto' ? baseDaily.condition : CONDITIONS[save.data.weatherId]
   // Dev-only QA override (?cond=rain); production always uses the date-seeded condition.
   const forced = import.meta.env.DEV ? (params.get('cond') as ConditionId | null) : null
-  const daily = forced && CONDITIONS[forced] ? { ...baseDaily, condition: CONDITIONS[forced] } : baseDaily
+  const daily = forced && CONDITIONS[forced] ? { ...baseDaily, condition: CONDITIONS[forced] } : { ...baseDaily, condition: selectedCondition }
   const lb = new Leaderboard(save.data.guest, guest => save.update({ guest }))
   let game: Game | undefined
   let ticket: Ticket | null = null
@@ -136,8 +137,13 @@ async function boot(): Promise<void> {
       ui.show('title')
     },
     settings: patch => {
+      const routeChanged = (patch.mapId !== undefined && patch.mapId !== save.data.mapId) || (patch.weatherId !== undefined && patch.weatherId !== save.data.weatherId)
       const qualityChanged = patch.quality !== undefined && patch.quality !== save.data.quality
       save.update(patch)
+      if (routeChanged) {
+        window.location.reload()
+        return
+      }
       applySettings(save.data)
       if (patch.locale) i18n.set(patch.locale)
       if (qualityChanged) game?.setQuality(save.data.quality)

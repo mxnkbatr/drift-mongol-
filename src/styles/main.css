@@ -372,3 +372,13 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
   .touch .t-reset { min-width: 48px; min-height: 48px; }
   html[lang='mn'] .logo .mn { font-size: calc(var(--u) * 4.6); }
 }
+
+/* ─── Steppe Neon route picker ─────────────────────────────────────── */
+.route .panel { max-height: 88vh; overflow: auto; }
+.route h3 { margin: 4px 0 0; color: var(--cyan); letter-spacing: .12em; font-size: calc(var(--u) * 2.1); text-transform: uppercase; }
+.route-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 8px 0 18px; }
+.route-card { pointer-events: auto; cursor: pointer; text-align: left; min-height: 76px; padding: 12px; border: 3px solid var(--ink); border-radius: 12px; background: linear-gradient(145deg, rgba(29,71,104,.96), rgba(21,28,63,.96)); color: var(--cream); box-shadow: 0 4px 0 var(--ink); }
+.route-card b { display: block; color: var(--gold); font-family: var(--display); font-size: calc(var(--u) * 1.8); line-height: 1.05; }
+.route-card small { display: block; margin-top: 6px; color: #d8e9ec; font-weight: 700; line-height: 1.2; }
+.route-card.on { border-color: var(--gold); background: linear-gradient(145deg, rgba(155,76,47,.98), rgba(39,42,86,.98)); box-shadow: 0 4px 0 var(--gold); }
+@media (max-width: 720px) { .route-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .route-card b { font-size: calc(var(--u) * 1.55); } }
