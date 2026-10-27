@@ -392,3 +392,23 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
 .boot .bar { border-color: #071a38; background: rgba(7,26,56,.8); box-shadow: 0 4px 0 #071a38; }
 .boot .bar i { background: linear-gradient(90deg, #e1a640, #d64c43, #2fc9e4); }
 .boot p { padding: 6px 14px; border-radius: 999px; background: rgba(7,26,56,.78); color: #fff4d8; text-shadow: 0 2px 0 #071a38; }
+
+/* ─── Clean iOS-style Mongolian retro title layout ─────────────────── */
+.title { background: linear-gradient(90deg, rgba(7, 12, 34, .9), rgba(7, 12, 34, .28) 48%, rgba(7, 12, 34, .45)); }
+.title-left { max-width: 52%; gap: calc(var(--u) * 1.25); }
+.title-left .tag { max-width: 31rem; text-transform: uppercase; letter-spacing: .16em; font-size: calc(var(--u) * 1.55); color: var(--gold); }
+.logo .mn { font-size: calc(var(--u) * 6.8); color: #e8b963; -webkit-text-stroke: .12em #101837; text-shadow: .06em .08em 0 #d63d42, .1em .13em 0 #101837; }
+.logo .zh { font-size: calc(var(--u) * 6.8); }
+.logo .en { font-size: calc(var(--u) * 3.7); }
+.quick-spec { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; color: #f6e7c4; font-family: var(--display); font-size: calc(var(--u) * 1.35); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.quick-spec i { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px rgba(230,182,91,.8); }
+.title-buttons { gap: 8px; padding: 8px; border: 2px solid rgba(230,182,91,.35); border-radius: 18px; background: rgba(8, 27, 67, .52); backdrop-filter: blur(12px); }
+.btn.compact { min-width: 74px; padding: 10px 13px; border-width: 2px; border-radius: 11px; box-shadow: 0 3px 0 var(--ink); font-size: calc(var(--u) * 1.2); letter-spacing: .06em; }
+.btn.compact:active { box-shadow: 0 1px 0 var(--ink); }
+@media (max-width: 720px) {
+  .title-left { max-width: 58%; }
+  .logo .mn, .logo .zh { font-size: calc(var(--u) * 5.7); }
+  .logo .en { font-size: calc(var(--u) * 3.1); }
+  .title-buttons { flex-wrap: wrap; justify-content: flex-end; max-width: 260px; }
+  .btn.compact { min-width: 58px; padding: 8px 9px; font-size: calc(var(--u) * 1.05); }
+}

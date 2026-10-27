@@ -1,6 +1,6 @@
 {
   "title.name": "漂移之王 · 草原霓虹",
-  "title.tag": "60秒。横滑草原。夺下金色之夜。",
+  "title.tag": "60秒 · 漂移 · 得分",
   "title.play": "开始漂移",
   "title.press": "空格 / 回车 / Ⓐ 键",
   "how.drive": "驾驶",
@@ -16,9 +16,9 @@
   "title.noBest": "还没有个人最佳",
   "title.target": "{name} 向你发起挑战",
   "title.targetScore": "超越 {score} 分",
-  "title.boards": "排行榜",
+  "title.boards": "排行",
   "title.settings": "设置",
-  "title.lang": "EN",
+  "title.lang": "中文",
   "cond.night": "霓虹之夜",
   "cond.rain": "雨夜",
   "cond.dusk": "黄昏",
@@ -114,9 +114,9 @@
   "share.system": "分享",
   "share.copyImg": "复制图片",
   "share.imgCopied": "图片已复制！",
-  "share.text": "我在《漂移之王·复古》拿了 {score} 分，来挑战我！",
-  "share.cardTitle": "漂移之王 · 复古",
-  "share.cardSub": "60 秒霓虹城市漂移挑战",
+  "share.text": "我在《漂移之王：草原霓虹》中获得 {score} 分，来超越我！",
+  "share.cardTitle": "漂移之王 · 草原霓虹",
+  "share.cardSub": "60秒蒙古漂移挑战",
   "share.cardScore": "我的得分",
   "share.cta": "扫码来挑战我",
   "share.cardRank": "今日第 {day} 名 · 总榜第 {all} 名",
@@ -153,5 +153,8 @@
   "map.steppe": "无垠草原",
   "map.steppe.d": "宽阔弯道、飞扬尘土与蓝色地平线",
   "map.kharkhorin": "哈拉和林山口",
-  "map.kharkhorin.d": "古老石阵、长节奏与刁钻弯心"
+  "map.kharkhorin.d": "古老石阵、长节奏与刁钻弯心",
+  "title.mode": "街机赛",
+  "title.duration": "60秒",
+  "title.quickHelp": "油门 + 手刹"
 }

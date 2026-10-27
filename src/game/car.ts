@@ -95,10 +95,10 @@ export class Car {
     this.prevPos.copy(this.pos)
 
     // ── visual rig ────────────────────────────────────────────────────────
-    const paint = new THREE.MeshStandardMaterial({ color: '#ff6a1a', roughness: 0.35, metalness: 0.35, flatShading: true })
-    const dark = new THREE.MeshStandardMaterial({ color: '#1b1838', roughness: 0.6, metalness: 0.2, flatShading: true })
-    const glass = new THREE.MeshStandardMaterial({ color: '#2a3f6a', roughness: 0.15, metalness: 0.6, flatShading: true, emissive: '#0d1a33' })
-    const stripe = new THREE.MeshStandardMaterial({ color: '#fff4d6', roughness: 0.4, flatShading: true })
+    const paint = new THREE.MeshStandardMaterial({ color: '#d8323d', roughness: 0.3, metalness: 0.45, flatShading: true })
+    const dark = new THREE.MeshStandardMaterial({ color: '#081b43', roughness: 0.6, metalness: 0.25, flatShading: true })
+    const glass = new THREE.MeshStandardMaterial({ color: '#163b76', roughness: 0.15, metalness: 0.65, flatShading: true, emissive: '#071735' })
+    const stripe = new THREE.MeshStandardMaterial({ color: '#e6b65b', roughness: 0.38, metalness: 0.25, flatShading: true })
     const head = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff3c9', emissiveIntensity: 2.4 })
     this.tailMat = new THREE.MeshStandardMaterial({ color: '#ff2340', emissive: '#ff1030', emissiveIntensity: 1.2 })
     const mesh = (g: THREE.BufferGeometry, m: THREE.Material, x = 0, y = 0, z = 0) => {
@@ -125,6 +125,10 @@ export class Car {
     mesh(new THREE.BoxGeometry(0.62, 0.1, 0.06), this.tailMat, -0.6, 0.7, -2.06)
     mesh(new THREE.BoxGeometry(0.1, 0.18, 1.8), dark, 0.97, 0.42, 0) // side skirts
     mesh(new THREE.BoxGeometry(0.1, 0.18, 1.8), dark, -0.97, 0.42, 0)
+    // Gold knotwork-inspired side livery and a small horse crest on the hood.
+    mesh(new THREE.BoxGeometry(0.045, 0.2, 0.72), stripe, 0.985, 0.72, 0.18)
+    mesh(new THREE.BoxGeometry(0.045, 0.2, 0.72), stripe, -0.985, 0.72, 0.18)
+    mesh(new THREE.BoxGeometry(0.38, 0.045, 0.62), stripe, 0, 0.925, 1.22)
     this.root.add(this.chassis)
 
     const tire = new THREE.MeshStandardMaterial({ color: '#15131f', roughness: 0.9, flatShading: true })

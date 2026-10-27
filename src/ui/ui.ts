@@ -131,23 +131,17 @@ export class Ui {
         <div class="logo"><span class="mn">ДРИФТИЙН ХААН · ТАЛЫН НЕОН</span><span class="zh">漂移之王 · 草原霓虹</span><span class="en">DRIFT KING // STEPPE NEON</span></div>
         <p class="tag" data-t="title.tag"></p>
         <button class="btn play primary" data-act="play"><span data-t="title.play"></span><small data-t="title.press"></small></button>
-        <div class="how">
-          <div class="how-card"><b data-t="how.drive"></b><kbd data-t="how.driveKeys"></kbd></div>
-          <div class="how-card hot"><b data-t="how.hb"></b><kbd data-t="how.hbKeys"></kbd></div>
-        </div>
-        <ul class="rules"><li class="r1" data-t="how.goal"></li><li class="r2" data-t="how.crash"></li><li class="r3" data-t="how.clip"></li></ul>
-        <p class="pad" data-t="how.pad"></p>
-        <p class="touch-how" data-t="how.touch"></p>
+        <div class="quick-spec"><span data-t="title.mode"></span><i></i><span data-t="title.duration"></span><i></i><span data-t="title.quickHelp"></span></div>
       </div>
       <div class="title-right">
         <div class="challenge-card" data-ref="vs" hidden><div class="label">VS</div><div class="vs-name" data-ref="vsName"></div><div class="vs-score" data-ref="vsScore"></div></div>
         <div class="daily-card"><div class="label" data-t="title.daily"></div><div class="cond" data-ref="cond"></div><div class="cond-d" data-ref="condD"></div><div class="day" data-ref="day"></div></div>
         <div class="best-card" data-ref="best"></div>
         <div class="title-buttons">
-          <button class="btn" data-act="boards" data-t="title.boards"></button>
-          <button class="btn" data-act="route" data-t="title.route"></button>
-          <button class="btn" data-act="settings" data-t="title.settings"></button>
-          <button class="btn ghost small" data-act="lang" data-t="title.lang"></button>
+          <button class="btn compact" data-act="boards" data-t="title.boards"></button>
+          <button class="btn compact" data-act="route" data-t="title.route"></button>
+          <button class="btn compact" data-act="settings" data-t="title.settings"></button>
+          <button class="btn ghost compact" data-act="lang" data-t="title.lang"></button>
         </div>
       </div>
     </section>`)
