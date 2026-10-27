@@ -4,8 +4,8 @@
  */
 export type Locale = 'en' | 'zh-CN'
 export type Quality = 'low' | 'medium' | 'high'
-
-export type ScoreEntry = { name: string; score: number; seconds: number; at: number }
+export type ScoreEntry = { score: number; at: number; day: string }
+export type Guest = { playerId: string; token: string; name: string }
 
 export type SaveData = {
   version: 1
@@ -14,36 +14,43 @@ export type SaveData = {
   musicVolume: number
   sfxVolume: number
   muted: boolean
-  sensitivity: number
-  invertY: boolean
   quality: Quality
   reducedMotion: boolean
   tutorialDone: boolean
+  /** Nickname for the online boards; '' until the player enters one. */
   playerName: string
-  leaderboard: ScoreEntry[]
+  best: number
+  bestDay: { day: string; score: number }
+  runs: number
+  guest: Guest | null
+  history: ScoreEntry[]
 }
 
-export const SAVE_KEY = 'game3d.save'
-export const LEADERBOARD_SIZE = 10
+export const SAVE_KEY = 'driftking.save'
+export const HISTORY_SIZE = 10
 
 export function defaultSave(): SaveData {
   return {
     version: 1,
     locale: '',
-    musicVolume: 0.7,
-    sfxVolume: 0.8,
+    musicVolume: 0.6,
+    sfxVolume: 0.85,
     muted: false,
-    sensitivity: 1,
-    invertY: false,
     quality: 'high',
     reducedMotion: false,
     tutorialDone: false,
-    playerName: 'PLAYER',
-    leaderboard: [],
+    playerName: '',
+    best: 0,
+    bestDay: { day: '', score: 0 },
+    runs: 0,
+    guest: null,
+    history: [],
   }
 }
 
 const clamp01 = (v: unknown, fallback: number) => (typeof v === 'number' && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : fallback)
+const nonNeg = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : 0)
+const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '')
 
 /** Parse untrusted stored JSON into a valid SaveData (pure; unit tested). */
 export function parseSave(raw: string | null): SaveData {
@@ -58,35 +65,39 @@ export function parseSave(raw: string | null): SaveData {
     return base
   }
   if (data.version !== 1) return base
-  const board = Array.isArray(data.leaderboard) ? data.leaderboard : []
+  const bd = (data.bestDay ?? {}) as Record<string, unknown>
+  const g = data.guest as Record<string, unknown> | null | undefined
+  const guest = g && typeof g === 'object' && typeof g.playerId === 'string' && typeof g.token === 'string' && g.token.length > 10 ? { playerId: str(g.playerId, 80), token: str(g.token, 400), name: str(g.name, 16) } : null
+  const history = Array.isArray(data.history) ? data.history : []
   return {
     version: 1,
     locale: data.locale === 'en' || data.locale === 'zh-CN' ? data.locale : '',
     musicVolume: clamp01(data.musicVolume, base.musicVolume),
     sfxVolume: clamp01(data.sfxVolume, base.sfxVolume),
     muted: data.muted === true,
-    sensitivity: typeof data.sensitivity === 'number' && data.sensitivity >= 0.2 && data.sensitivity <= 3 ? data.sensitivity : base.sensitivity,
-    invertY: data.invertY === true,
     quality: data.quality === 'low' || data.quality === 'medium' || data.quality === 'high' ? data.quality : base.quality,
     reducedMotion: data.reducedMotion === true,
     tutorialDone: data.tutorialDone === true,
-    playerName: typeof data.playerName === 'string' && data.playerName.trim() ? data.playerName.trim().slice(0, 16) : base.playerName,
-    leaderboard: board
-      .filter((e): e is ScoreEntry => !!e && typeof e === 'object' && typeof (e as ScoreEntry).name === 'string' && Number.isFinite((e as ScoreEntry).score))
-      .map(e => ({ name: e.name.slice(0, 16), score: Math.max(0, Math.floor(e.score)), seconds: Number.isFinite(e.seconds) ? e.seconds : 0, at: Number.isFinite(e.at) ? e.at : 0 }))
-      .slice(0, LEADERBOARD_SIZE),
+    playerName: str(data.playerName, 16).trim(),
+    best: nonNeg(data.best),
+    bestDay: { day: str(bd.day, 10), score: nonNeg(bd.score) },
+    runs: nonNeg(data.runs),
+    guest,
+    history: history
+      .filter((e): e is ScoreEntry => !!e && typeof e === 'object' && Number.isFinite((e as ScoreEntry).score))
+      .map(e => ({ score: nonNeg(e.score), at: nonNeg(e.at), day: str(e.day, 10) }))
+      .slice(0, HISTORY_SIZE),
   }
 }
 
-/** Insert a run into a bounded, deterministically ordered leaderboard (higher score, then faster, then earlier). */
-export function insertScore(board: ScoreEntry[], entry: ScoreEntry): { board: ScoreEntry[]; rank: number } {
-  const next = [...board, entry].sort((a, b) => b.score - a.score || a.seconds - b.seconds || a.at - b.at).slice(0, LEADERBOARD_SIZE)
-  return { board: next, rank: next.indexOf(entry) }
+/** Insert a run into the bounded personal history (higher score first, then earlier). */
+export function insertScore(history: ScoreEntry[], entry: ScoreEntry): { history: ScoreEntry[]; rank: number } {
+  const next = [...history, entry].sort((a, b) => b.score - a.score || a.at - b.at).slice(0, HISTORY_SIZE)
+  return { history: next, rank: next.indexOf(entry) }
 }
 
 export class SaveStore {
   data: SaveData
-
   constructor(private readonly storage: Pick<Storage, 'getItem' | 'setItem'> | undefined = globalThis.localStorage) {
     let raw: string | null = null
     try {

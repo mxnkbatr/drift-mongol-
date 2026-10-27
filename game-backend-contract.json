@@ -1,0 +1,12 @@
+{
+  "schema": "manus.game.backend-contract/v1",
+  "deploy": { "mode": "hybrid", "dockerfilePath": "server/Dockerfile", "healthPath": "/api/health" },
+  "routes": [
+    { "path": "/api/*", "target": "server" },
+    { "path": "/assets/*", "target": "static", "cache": "immutable" },
+    { "path": "/*", "target": "static" }
+  ],
+  "api": { "protocolVersion": 1 },
+  "database": { "schemaVersion": 2 },
+  "boards": [{ "id": "drift-v1", "rulesVersion": "v1" }]
+}

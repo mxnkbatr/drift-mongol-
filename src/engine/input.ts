@@ -1,185 +1,137 @@
 /**
- * Unified input: keyboard + mouse (pointer lock), gamepad and touch all feed one action state.
- * Gameplay reads `move`, `look` and `pressed()/held()`; it never checks raw keys.
- *
- * Call `endFrame()` once per rendered frame after gameplay consumed edge-triggered presses.
+ * Unified input for driving: keyboard, gamepad (analog triggers + stick) and touch buttons all
+ * feed one state. Gameplay reads `throttle`, `brake`, `steer` and `held()/consume()`; it never
+ * checks raw keys.
  */
-export type Action = 'jump' | 'sprint' | 'dash' | 'pause' | 'confirm' | 'back' | 'interact'
+export type Action = 'handbrake' | 'pause' | 'confirm' | 'back' | 'reset' | 'start'
 export type InputMethod = 'keyboard' | 'gamepad' | 'touch'
+export type TouchControl = 'throttle' | 'brake' | 'left' | 'right' | 'handbrake'
 
 const KEY_BINDINGS: Record<Action, string[]> = {
-  jump: ['Space'],
-  sprint: ['ShiftLeft', 'ShiftRight'],
-  dash: ['KeyF', 'KeyJ'],
+  handbrake: ['Space', 'ShiftLeft', 'ShiftRight'],
   pause: ['Escape', 'KeyP'],
   confirm: ['Enter', 'NumpadEnter'],
-  // Menus handle Escape/Backspace themselves via DOM keydown; `back` is the gamepad B button.
   back: [],
-  interact: ['KeyE'],
+  reset: ['KeyR'],
+  start: ['Space', 'Enter', 'NumpadEnter'],
 }
-const MOVE_KEYS = { up: ['KeyW', 'ArrowUp'], down: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'] }
-// Standard gamepad mapping: A=0, B=1, X=2, Y=3, LB=4, RB=5, RT=7, Start=9, L3=10.
-const PAD_BINDINGS: Record<Action, number[]> = { jump: [0], sprint: [4, 10], dash: [2, 5, 7], pause: [9], confirm: [0], back: [1], interact: [3] }
+const DRIVE_KEYS = { throttle: ['KeyW', 'ArrowUp'], brake: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'] }
+// Standard gamepad mapping: A=0, B=1, X=2, Y=3, LB=4, RB=5, LT=6, RT=7, Back=8, Start=9, D-pad 12-15.
+const PAD_BINDINGS: Record<Action, number[]> = { handbrake: [0, 2, 5], pause: [9], confirm: [0], back: [1], reset: [3, 8], start: [0, 9] }
 
 export class Input {
-  /** Movement intent in [-1, 1]: x = strafe right, y = forward. */
+  /** 0..1 */
+  throttle = 0
+  /** 0..1 (brake, then reverse when stopped). */
+  brake = 0
+  /** -1 (left) .. 1 (right). */
+  steer = 0
+  /** Menu navigation intent: x = right, y = up. */
   readonly move = { x: 0, y: 0 }
-  /** Camera look delta accumulated since the last `endFrame()` (radians-ish units, pre-sensitivity). */
-  readonly look = { x: 0, y: 0 }
   method: InputMethod = 'keyboard'
-  /** Multiplies look deltas; settings screen writes it. */
-  sensitivity = 1
-  invertY = false
-
   private keys = new Set<string>()
   private held_ = new Set<Action>()
   private pressed_ = new Set<Action>()
-  private touchMove = { x: 0, y: 0 }
-  private touchButtons = new Set<Action>()
-  private padPrev: boolean[] = []
-  private padIndex = -1
-  private padId = ''
+  private touch = new Set<TouchControl>()
+  private padPrev = new Set<Action>()
   private listeners: Array<() => void> = []
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
-    const on = <K extends keyof WindowEventMap>(target: Window | HTMLElement, type: K, fn: (e: WindowEventMap[K]) => void, opts?: AddEventListenerOptions) => {
-      target.addEventListener(type, fn as EventListener, opts)
-      this.listeners.push(() => target.removeEventListener(type, fn as EventListener, opts))
+  constructor() {
+    const on = <K extends keyof WindowEventMap>(type: K, fn: (e: WindowEventMap[K]) => void) => {
+      window.addEventListener(type, fn as EventListener)
+      this.listeners.push(() => window.removeEventListener(type, fn as EventListener))
     }
-    on(window, 'keydown', e => {
+    on('keydown', e => {
+      const typing = (e.target as HTMLElement | null)?.matches?.('input, textarea')
+      if (typing) return
+      if (e.code === 'Space' || e.code.startsWith('Arrow')) e.preventDefault()
       if (e.repeat) return
       this.keys.add(e.code)
       this.method = 'keyboard'
       for (const [action, codes] of Object.entries(KEY_BINDINGS) as [Action, string[]][]) {
         if (codes.includes(e.code)) this.pressed_.add(action)
       }
-      // Keep the page from scrolling, but never block typing in text fields (leaderboard name).
-      const typing = (e.target as HTMLElement | null)?.matches?.('input, textarea')
-      if (!typing && (e.code === 'Space' || e.code.startsWith('Arrow'))) e.preventDefault()
     })
-    on(window, 'keyup', e => this.keys.delete(e.code))
-    on(window, 'blur', () => this.keys.clear())
-    on(window, 'gamepaddisconnected', e => {
-      if (e.gamepad.index === this.padIndex) this.resetPad()
-    })
-    on(window, 'mousedown', e => {
-      // Left click dashes while the mouse is captured for camera look.
-      if (document.pointerLockElement === canvas && e.button === 0) this.pressed_.add('dash')
-    })
-    on(window, 'mousemove', e => {
-      if (document.pointerLockElement !== canvas) return
-      this.look.x += e.movementX * 0.0022
-      this.look.y += e.movementY * 0.0022
+    on('keyup', e => this.keys.delete(e.code))
+    on('blur', () => {
+      this.keys.clear()
+      this.touch.clear()
     })
   }
 
-  /** Request pointer lock for mouse look (must be called from a user gesture). */
-  lockPointer(): void {
-    if (this.method !== 'touch' && document.pointerLockElement !== this.canvas) {
-      this.canvas.requestPointerLock?.()?.catch?.(() => undefined)
-    }
-  }
-
-  unlockPointer(): void {
-    if (document.pointerLockElement) document.exitPointerLock()
-  }
-
-  /** Touch controls feed these from the on-screen joystick and buttons. */
-  setTouchMove(x: number, y: number): void {
+  setTouch(control: TouchControl, down: boolean): void {
     this.method = 'touch'
-    this.touchMove.x = x
-    this.touchMove.y = y
+    if (down) {
+      if (control === 'handbrake' && !this.touch.has(control)) this.pressed_.add('handbrake')
+      this.touch.add(control)
+    } else this.touch.delete(control)
   }
 
-  addTouchLook(dx: number, dy: number): void {
-    this.method = 'touch'
-    this.look.x += dx * 0.006
-    this.look.y += dy * 0.006
+  /** Any driving intent this frame (used to start the clock on first input). */
+  get active(): boolean {
+    return this.throttle > 0.05 || this.brake > 0.05 || Math.abs(this.steer) > 0.1 || this.held_.has('handbrake')
   }
 
-  setTouchButton(action: Action, down: boolean): void {
-    this.method = 'touch'
-    if (down && !this.touchButtons.has(action)) this.pressed_.add(action)
-    if (down) this.touchButtons.add(action)
-    else this.touchButtons.delete(action)
-  }
-
-  private resetPad(): void {
-    this.padPrev = []
-    this.padIndex = -1
-    this.padId = ''
-  }
-
-  /** Sample once per rendered frame; elapsed time scales continuous stick look only. */
-  update(frameSeconds = 1 / 60): void {
+  /** Sample continuous sources. Call once per rendered frame before gameplay reads input. */
+  update(): void {
     const k = (codes: string[]) => codes.some(code => this.keys.has(code))
-    let x = (k(MOVE_KEYS.right) ? 1 : 0) - (k(MOVE_KEYS.left) ? 1 : 0)
-    let y = (k(MOVE_KEYS.up) ? 1 : 0) - (k(MOVE_KEYS.down) ? 1 : 0)
+    let throttle = k(DRIVE_KEYS.throttle) || this.touch.has('throttle') ? 1 : 0
+    let brake = k(DRIVE_KEYS.brake) || this.touch.has('brake') ? 1 : 0
+    let steer = (k(DRIVE_KEYS.right) || this.touch.has('right') ? 1 : 0) - (k(DRIVE_KEYS.left) || this.touch.has('left') ? 1 : 0)
+    let navY = (k(DRIVE_KEYS.throttle) ? 1 : 0) - (k(DRIVE_KEYS.brake) ? 1 : 0)
     this.held_.clear()
-    for (const [action, codes] of Object.entries(KEY_BINDINGS) as [Action, string[]][]) {
-      if (k(codes)) this.held_.add(action)
-    }
-    for (const action of this.touchButtons) this.held_.add(action)
-    if (this.touchMove.x !== 0 || this.touchMove.y !== 0) {
-      x = this.touchMove.x
-      y = this.touchMove.y
-    }
-    const pad = navigator.getGamepads?.().find(p => p && p.connected)
+    for (const [action, codes] of Object.entries(KEY_BINDINGS) as [Action, string[]][]) if (k(codes)) this.held_.add(action)
+    if (this.touch.has('handbrake')) this.held_.add('handbrake')
+    const pads = navigator.getGamepads?.() ?? []
+    const pad = [...pads].find(p => p && p.connected)
     if (pad) {
-      if (pad.index !== this.padIndex || pad.id !== this.padId) this.padPrev = []
-      this.padIndex = pad.index
-      this.padId = pad.id
-      const dead = (v: number) => (Math.abs(v) < 0.18 ? 0 : v)
+      const dead = (v: number, d = 0.16) => (Math.abs(v) < d ? 0 : (v - Math.sign(v) * d) / (1 - d))
       const lx = dead(pad.axes[0] ?? 0)
       const ly = dead(pad.axes[1] ?? 0)
-      const rx = dead(pad.axes[2] ?? 0)
-      const ry = dead(pad.axes[3] ?? 0)
-      const padActive = lx !== 0 || ly !== 0 || rx !== 0 || ry !== 0 || pad.buttons.some(b => b.pressed)
+      const rt = pad.buttons[7]?.value ?? 0
+      const lt = pad.buttons[6]?.value ?? 0
+      const dl = pad.buttons[14]?.pressed ? 1 : 0
+      const dr = pad.buttons[15]?.pressed ? 1 : 0
+      const du = pad.buttons[12]?.pressed ? 1 : 0
+      const dd = pad.buttons[13]?.pressed ? 1 : 0
+      const padActive = lx !== 0 || ly !== 0 || rt > 0.05 || lt > 0.05 || pad.buttons.some(b => b.pressed)
       if (padActive) this.method = 'gamepad'
-      const dx = (pad.buttons[15]?.pressed ? 1 : 0) - (pad.buttons[14]?.pressed ? 1 : 0)
-      const dy = (pad.buttons[12]?.pressed ? 1 : 0) - (pad.buttons[13]?.pressed ? 1 : 0)
-      if (lx !== 0 || ly !== 0 || dx !== 0 || dy !== 0) {
-        x = dx || lx
-        y = dy || -ly
+      if (this.method === 'gamepad') {
+        throttle = Math.max(throttle, rt > 0.04 ? rt : 0)
+        brake = Math.max(brake, lt > 0.04 ? lt : 0)
+        const padSteer = lx !== 0 ? Math.sign(lx) * Math.pow(Math.abs(lx), 1.35) : dr - dl
+        if (padSteer !== 0) steer = padSteer
+        const padNav = ly !== 0 ? -ly : du - dd
+        if (padNav !== 0) navY = padNav
       }
-      // Preserve the 60 Hz turn rate at every render frequency.
-      this.look.x += rx * 2.7 * frameSeconds
-      this.look.y += ry * 2.7 * frameSeconds
+      const now = new Set<Action>()
       for (const [action, buttons] of Object.entries(PAD_BINDINGS) as [Action, number[]][]) {
-        if (buttons.some(i => pad.buttons[i]?.pressed)) this.held_.add(action)
-        // Alternate bindings are independent physical presses, even when another is held.
-        if (buttons.some(i => pad.buttons[i]?.pressed && !this.padPrev[i])) this.pressed_.add(action)
+        if (buttons.some(i => pad.buttons[i]?.pressed)) now.add(action)
       }
-      this.padPrev = pad.buttons.map(b => b.pressed)
-    } else this.resetPad()
-    const len = Math.hypot(x, y)
-    this.move.x = len > 1 ? x / len : x
-    this.move.y = len > 1 ? y / len : y
+      for (const action of now) {
+        this.held_.add(action)
+        if (!this.padPrev.has(action)) this.pressed_.add(action)
+      }
+      this.padPrev = now
+    }
+    this.throttle = throttle
+    this.brake = brake
+    this.steer = Math.max(-1, Math.min(1, steer))
+    this.move.x = this.steer
+    this.move.y = navY
   }
 
   held(action: Action): boolean {
     return this.held_.has(action)
   }
 
-  /** True once per physical press. */
   pressed(action: Action): boolean {
     return this.pressed_.has(action)
   }
 
-  /**
-   * Read and clear a press. Use this inside fixed simulation steps: several steps can run in one
-   * rendered frame, and a press must trigger exactly one jump/confirm.
-   */
+  /** Read and clear a press (use inside fixed steps so one press triggers exactly once). */
   consume(action: Action): boolean {
     return this.pressed_.delete(action)
-  }
-
-  /** Consume the look delta with sensitivity/invert applied. */
-  takeLook(): { x: number; y: number } {
-    const out = { x: this.look.x * this.sensitivity, y: this.look.y * this.sensitivity * (this.invertY ? -1 : 1) }
-    this.look.x = 0
-    this.look.y = 0
-    return out
   }
 
   endFrame(): void {

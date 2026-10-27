@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "title": "Drift King Retro",
+  "description": "A 60-second neon arcade drift score attack with daily conditions, bilingual UI, and a shared leaderboard.",
+  "defaultCaptions": {
+    "x": "Drift King Retro: 60 seconds to own the neon night.",
+    "facebook": "Drift King Retro — chain clean slides and climb the board.",
+    "reddit": "A retro arcade 60-second drift score attack with daily conditions.",
+    "discord": "Can you beat my Drift King Retro score?"
+  },
+  "assets": {
+    "og": "assets/share/og.png",
+    "favicon": "assets/share/favicon.png"
+  }
+}

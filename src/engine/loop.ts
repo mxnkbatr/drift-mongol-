@@ -6,8 +6,6 @@
  * interpolation factor `alpha` (0..1) between the previous and current simulation state.
  */
 export type LoopCallbacks = {
-  /** Sample frame input before any simulation steps, including paused/zero-step frames. */
-  beforeFrame?: (frameSeconds: number) => void
   /** Advance simulation by exactly one fixed step. */
   step: (stepSeconds: number) => void
   /** Draw the current frame; `alpha` blends the last two simulation states. `frameSeconds` is wall time. */
@@ -35,27 +33,17 @@ export class GameLoop {
     this.last = performance.now()
     const frame = (now: number) => {
       if (!this.running) return
-      // Keep the loop alive if a callback throws. Scheduling first also lets a
-      // callback's stop() cancel the successor without leaving a second loop.
-      this.handle = requestAnimationFrame(frame)
       const frameSeconds = Math.min((now - this.last) / 1000, this.maxFrameSeconds)
       this.last = now
-      try {
-        this.callbacks.beforeFrame?.(frameSeconds)
-        if (!this.paused) {
-          this.accumulator += frameSeconds
-          while (this.accumulator >= this.stepSeconds) {
-            this.callbacks.step(this.stepSeconds)
-            this.accumulator -= this.stepSeconds
-          }
+      if (!this.paused) {
+        this.accumulator += frameSeconds
+        while (this.accumulator >= this.stepSeconds) {
+          this.callbacks.step(this.stepSeconds)
+          this.accumulator -= this.stepSeconds
         }
-        this.callbacks.render(this.paused ? 1 : this.accumulator / this.stepSeconds, frameSeconds)
-      } catch (error) {
-        // Failed updates may have partially advanced gameplay. Do not replay
-        // their accumulated time, and keep the original error observable.
-        this.resetAccumulator()
-        throw error
       }
+      this.callbacks.render(this.paused ? 1 : this.accumulator / this.stepSeconds, frameSeconds)
+      this.handle = requestAnimationFrame(frame)
     }
     this.handle = requestAnimationFrame(frame)
   }
