@@ -515,12 +515,12 @@ export class Ui {
       case 'clip': this.popup(t('pop.clip', { n: fmt(e.bonus) }), { x: at.x, y: at.y - 40 }, 'clip'); break
       case 'nearMiss': this.popup(t('pop.near', { n: fmt(e.bonus) }), { x: at.x, y: at.y - 70 }, 'near'); break
       case 'lost':
-        if (e.points > 0) this.popup(t(e.reason === 'crash' ? 'pop.crash' : 'pop.spin', { n: fmt(e.points) }), { x: mid.x, y: mid.y + 60 }, 'lost', true)
+        if (e.points > 0) this.popup(t(e.reason === 'crash' ? 'pop.crash' : 'pop.spin', { n: fmt(e.points) }), { x: at.x, y: at.y - 28 }, 'car lost')
         this.flash('lost')
         break
       case 'bank':
-        if (e.rating > 0) this.popup(`${t(`rating.${e.rating}`)}  +${fmt(e.points)}`, { x: mid.x, y: mid.y + 40 }, `bank r${e.rating}`, true)
-        else this.popup(`+${fmt(e.points)}`, { x: mid.x, y: mid.y + 60 }, 'bank r0')
+        if (e.rating > 0) this.popup(`${t(`rating.${e.rating}`)}  +${fmt(e.points)}`, { x: at.x, y: at.y - 30 }, `car bank r${e.rating}`)
+        else this.popup(`+${fmt(e.points)}`, { x: at.x, y: at.y - 26 }, 'car bank r0')
         break
       case 'heat': this.toast(t(`heat.${e.heat}`), `heat h${e.heat}`); break
     }

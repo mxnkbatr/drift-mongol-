@@ -428,3 +428,16 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
   .boot .boot-copy p { font-size: 12px; padding: 6px 11px; }
   .boot .boot-copy small { font-size: 10px; }
 }
+
+/* ─── Car-attached feedback: keep the racing line visible ──────────── */
+.pop.car { z-index: 3; font-size: clamp(13px, calc(var(--u) * 2.15), 30px); padding: 4px 10px; border: 2px solid var(--ink); border-radius: 8px; background: rgba(20, 15, 46, .78); text-shadow: 0 2px 0 var(--ink); animation-duration: 1s; }
+.pop.car.bank { color: var(--gold); }
+.pop.car.lost { color: var(--red); }
+.pop.car.bank.r4, .pop.car.bank.r5, .pop.car.bank.r6 { font-size: clamp(14px, calc(var(--u) * 2.45), 34px); }
+.pop.car::after { content: ''; position: absolute; left: 50%; bottom: -8px; width: 10px; height: 10px; background: inherit; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+@media (pointer: coarse) {
+  .pop.car { font-size: clamp(11px, calc(var(--u) * 1.8), 24px); padding: 3px 8px; }
+  .pop.car.bank.r4, .pop.car.bank.r5, .pop.car.bank.r6 { font-size: clamp(12px, calc(var(--u) * 2.1), 28px); }
+  .drift { left: calc(50% + min(16vw, 90px)); bottom: calc(var(--u) * 4.2 + var(--safe-b)); }
+  .drift.on { transform: translateX(-50%) scale(.78); transform-origin: bottom center; }
+}
