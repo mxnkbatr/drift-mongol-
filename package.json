@@ -4,18 +4,24 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/manus-game-assets/restore.mjs && vite",
-    "build": "node scripts/manus-game-assets/restore.mjs && node scripts/manus-game-sharing/build.mjs",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "smoke": "node scripts/smoke.mjs",
-    "manus:build-source": "tsc --noEmit && vite build && node scripts/check-size.mjs"
+    "manus:build-source": "tsc --noEmit && vite build && node scripts/check-size.mjs",
+    "appflow:build": "npm run build",
+    "ionic:build": "npm run build",
+    "manus:build": "node scripts/manus-game-assets/restore.mjs && node scripts/manus-game-sharing/build.mjs",
+    "cap:sync": "npm run build && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor/core": "^8.5.3",
+    "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.5.3",
     "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
     "@dimforge/rapier3d-compat": "^0.21.0",
     "qrcode-generator": "1.4.4",
     "three": "^0.186.1"
@@ -27,6 +33,5 @@
     "typescript": "^5.9.3",
     "vite": "^8.3.1",
     "vitest": "^5.0.2"
-  },
-  "packageManager": "pnpm@10.18.0"
+  }
 }

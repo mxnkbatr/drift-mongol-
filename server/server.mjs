@@ -22,7 +22,7 @@ const idPattern = /^[a-zA-Z0-9_-]{1,64}$/;
 const uuidPattern = /^[0-9a-f-]{36}$/;
 const dayPattern = /^\d{4}-\d{2}-\d{2}$/;
 const prefix = '/api/leaderboards/v1';
-const corsOrigins = new Set(['capacitor://localhost', ...String(process.env.GAME_CORS_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean)]);
+const corsOrigins = new Set(['capacitor://localhost', 'ionic://localhost', 'https://localhost', ...String(process.env.GAME_CORS_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean)]);
 function corsAllowed(req) {
   const origin = String(req.headers.origin || '');
   return !origin || corsOrigins.has(origin);
