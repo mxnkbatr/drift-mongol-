@@ -100,6 +100,8 @@ export class Car {
     const glass = new THREE.MeshStandardMaterial({ color: '#163b76', roughness: 0.15, metalness: 0.65, flatShading: true, emissive: '#071735' })
     const stripe = new THREE.MeshStandardMaterial({ color: '#e6b65b', roughness: 0.38, metalness: 0.25, flatShading: true })
     const head = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff3c9', emissiveIntensity: 2.4 })
+    const led = new THREE.MeshStandardMaterial({ color: '#55eeff', emissive: '#18dfff', emissiveIntensity: 4.2, toneMapped: false })
+    const redLed = new THREE.MeshStandardMaterial({ color: '#ff244d', emissive: '#ff103d', emissiveIntensity: 3.2, toneMapped: false })
     this.tailMat = new THREE.MeshStandardMaterial({ color: '#ff2340', emissive: '#ff1030', emissiveIntensity: 1.2 })
     const mesh = (g: THREE.BufferGeometry, m: THREE.Material, x = 0, y = 0, z = 0) => {
       const o = new THREE.Mesh(g, m)
@@ -121,10 +123,17 @@ export class Car {
     mesh(taperBox(2.05, 0.08, 0.5, 1, 0.8), dark, 0, 1.2, -1.85) // wing
     mesh(new THREE.BoxGeometry(0.5, 0.12, 0.06), head, 0.62, 0.66, 2.06)
     mesh(new THREE.BoxGeometry(0.5, 0.12, 0.06), head, -0.62, 0.66, 2.06)
+    mesh(new THREE.BoxGeometry(1.55, 0.055, 0.045), led, 0, 0.72, 2.085) // front LED light bar
+    mesh(new THREE.BoxGeometry(1.35, 0.045, 0.04), redLed, 0, 0.69, -2.085) // rear light signature
     mesh(new THREE.BoxGeometry(0.62, 0.1, 0.06), this.tailMat, 0.6, 0.7, -2.06)
     mesh(new THREE.BoxGeometry(0.62, 0.1, 0.06), this.tailMat, -0.6, 0.7, -2.06)
     mesh(new THREE.BoxGeometry(0.1, 0.18, 1.8), dark, 0.97, 0.42, 0) // side skirts
     mesh(new THREE.BoxGeometry(0.1, 0.18, 1.8), dark, -0.97, 0.42, 0)
+    mesh(new THREE.BoxGeometry(0.06, 0.05, 1.45), led, 1.01, 0.57, 0.15)
+    mesh(new THREE.BoxGeometry(0.06, 0.05, 1.45), led, -1.01, 0.57, 0.15)
+    mesh(new THREE.BoxGeometry(0.72, 0.09, 0.16), dark, 0, 0.94, 0.72) // hood intake
+    mesh(new THREE.BoxGeometry(0.22, 0.16, 0.1), dark, 1.0, 0.98, 0.8) // mirror
+    mesh(new THREE.BoxGeometry(0.22, 0.16, 0.1), dark, -1.0, 0.98, 0.8)
     // Gold knotwork-inspired side livery and a small horse crest on the hood.
     mesh(new THREE.BoxGeometry(0.045, 0.2, 0.72), stripe, 0.985, 0.72, 0.18)
     mesh(new THREE.BoxGeometry(0.045, 0.2, 0.72), stripe, -0.985, 0.72, 0.18)
@@ -132,7 +141,7 @@ export class Car {
     this.root.add(this.chassis)
 
     const tire = new THREE.MeshStandardMaterial({ color: '#15131f', roughness: 0.9, flatShading: true })
-    const rim = new THREE.MeshStandardMaterial({ color: '#d8dcef', roughness: 0.3, metalness: 0.7, flatShading: true })
+    const rim = new THREE.MeshStandardMaterial({ color: '#d8dcef', roughness: 0.3, metalness: 0.7, emissive: '#164b70', emissiveIntensity: 0.7, flatShading: true })
     const tireGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.3, 10).rotateZ(Math.PI / 2)
     const rimGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.32, 6).rotateZ(Math.PI / 2)
     for (const [x, z] of [[0.86, 1.3], [-0.86, 1.3], [0.86, -1.3], [-0.86, -1.3]]) {

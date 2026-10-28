@@ -155,7 +155,7 @@ export class World {
     this.buildShoulders()
     this.buildBarriers()
     const windows = windowTexture()
-    this.buildingMat = new THREE.MeshStandardMaterial({ map: windows, emissiveMap: windows, emissive: '#ffffff', emissiveIntensity: 1.2, vertexColors: true, roughness: 0.85, flatShading: true })
+    this.buildingMat = new THREE.MeshStandardMaterial({ map: windows, emissiveMap: windows, emissive: '#d8eaff', emissiveIntensity: 1.55, vertexColors: true, roughness: 0.68, metalness: 0.12, flatShading: true })
     if (mapId === 'ub') this.buildCity()
     else this.buildSteppe(mapId)
     this.bulbMat = new THREE.MeshBasicMaterial({ color: '#ffe3a3', toneMapped: false })
@@ -415,6 +415,7 @@ export class World {
     const parts: THREE.BufferGeometry[] = []
     const roofParts: THREE.BufferGeometry[] = []
     const signs: THREE.BufferGeometry[] = []
+    const neonParts: THREE.BufferGeometry[] = []
     const facade = ['#102f52', '#173c5a', '#24465a', '#3e314d', '#46374f', '#25465b'].map(c => new THREE.Color(c))
     const neon = ['#d63e4d', '#44d8e8', '#ffd166', '#e6b84d', '#8bd17c'].map(c => new THREE.Color(c))
     const gold = new THREE.Color('#c6923f')
@@ -477,6 +478,20 @@ export class World {
           g.translate(sx, Math.min(h - 2, 6 + r() * 12) , sz)
           signs.push(g)
         }
+        if (near && r() < 0.72) {
+          const c = neon[Math.floor(r() * neon.length)]
+          const bar = new THREE.BoxGeometry(0.16, Math.min(9, h * 0.62), 0.08).toNonIndexed()
+          const colors = new Float32Array(bar.attributes.position.count * 3)
+          for (let i = 0; i < colors.length / 3; i += 1) colors.set([c.r, c.g, c.b], i * 3)
+          bar.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+          bar.translate(cx + (r() < 0.5 ? -1 : 1) * (w / 2 + 0.08), Math.min(h - 1, h * 0.58), cz + d * 0.5 + 0.06)
+          neonParts.push(bar)
+        }
+        if (near && r() < 0.3) {
+          const mast = new THREE.CylinderGeometry(0.055, 0.08, 2.2, 6).translate(cx, h + 1.1, cz)
+          const beacon = new THREE.BoxGeometry(0.28, 0.08, 0.28).translate(cx, h + 2.25, cz)
+          neonParts.push(mast, beacon)
+        }
       }
     }
     // Distant skyline ring, mostly silhouettes in the fog.
@@ -490,6 +505,7 @@ export class World {
     this.scene.add(city)
     if (roofParts.length) this.scene.add(new THREE.Mesh(mergeGeometries(roofParts), this.buildingMat))
     if (signs.length) this.scene.add(new THREE.Mesh(mergeGeometries(signs), new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })))
+    if (neonParts.length) this.scene.add(new THREE.Mesh(mergeGeometries(neonParts), new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })))
   }
 
   private buildLamps(): void {
