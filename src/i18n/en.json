@@ -157,5 +157,10 @@
   "title.mode": "ARCADE RUN",
   "title.duration": "60 SEC",
   "title.quickHelp": "THROTTLE + HANDBRAKE",
-  "boot.credit": "Developed by Munkhbaatar Dorjsuren"
+  "boot.credit": "Developed by Munkhbaatar Dorjsuren",
+  "title.controls": "CONTROLS",
+  "title.steer": "STEER",
+  "title.throttle": "THROTTLE",
+  "title.handbrake": "HANDBRAKE",
+  "title.phoneControls": "Phone: use the touch controls"
 }

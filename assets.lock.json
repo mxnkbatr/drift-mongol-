@@ -39,6 +39,13 @@
       "size": 6501818,
       "assetType": "image",
       "groupId": "store"
+    },
+    "assets/store/japanese-midnight-splash.png": {
+      "path": "/manus-storage/game/sha256/1da623f262058bd4c090c6de33a219719241eb724bf657c7d4f6fd936dbee525.png",
+      "sha256": "sha256:1da623f262058bd4c090c6de33a219719241eb724bf657c7d4f6fd936dbee525",
+      "size": 5861264,
+      "assetType": "image",
+      "groupId": "store"
     }
   }
 }

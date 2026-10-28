@@ -86,7 +86,7 @@ export class Ui {
   ) {
     this.root = document.getElementById('ui')!
     this.screens = {
-      boot: el(`<section class="screen boot"><img class="splash-art" src="/store/LaunchScreen-540x1170.jpg" alt="" /><div class="logo small"><span data-t="title.name"></span></div><div class="boot-copy"><p data-t="boot.loading"></p><small data-t="boot.credit"></small></div><div class="bar"><i></i></div></section>`),
+      boot: el(`<section class="screen boot"><img class="splash-art" src="/store/LaunchScreen-JP-540x960.jpg" alt="" /><div class="logo small"><span data-t="title.name"></span></div><div class="boot-copy"><p data-t="boot.loading"></p><small data-t="boot.credit"></small></div><div class="bar"><i></i></div></section>`),
       title: this.buildTitle(),
       hud: this.buildHud(),
       pause: el(`<section class="screen pause"><div class="panel"><h2 class="stroke" data-t="pause.title"></h2>
@@ -128,10 +128,19 @@ export class Ui {
   private buildTitle(): HTMLElement {
     return el(`<section class="screen title">
       <div class="title-left">
-        <div class="logo"><span class="mn">ДРИФТИЙН ХААН · ТАЛЫН НЕОН</span><span class="zh">漂移之王 · 草原霓虹</span><span class="en">DRIFT KING // STEPPE NEON</span></div>
+        <div class="logo"><span class="mn">DRIFT KING · MIDNIGHT CIRCUIT</span><span class="zh">漂移之王 · 午夜赛道</span><span class="en">DRIFT KING // MIDNIGHT CIRCUIT</span></div>
         <p class="tag" data-t="title.tag"></p>
         <button class="btn play primary" data-act="play"><span data-t="title.play"></span><small data-t="title.press"></small></button>
-        <div class="quick-spec"><span data-t="title.mode"></span><i></i><span data-t="title.duration"></span><i></i><span data-t="title.quickHelp"></span></div>
+        <div class="quick-spec"><span data-t="title.mode"></span><i></i><span data-t="title.duration"></span></div>
+        <div class="control-deck">
+          <div class="control-deck-title" data-t="title.controls"></div>
+          <div class="control-grid">
+            <div><b data-t="title.steer"></b><kbd>◀ ▶</kbd></div>
+            <div><b data-t="title.throttle"></b><kbd>↑</kbd></div>
+            <div><b data-t="title.handbrake"></b><kbd>SPACE</kbd></div>
+          </div>
+          <small class="control-phone" data-t="title.phoneControls"></small>
+        </div>
       </div>
       <div class="title-right">
         <div class="challenge-card" data-ref="vs" hidden><div class="label">VS</div><div class="vs-name" data-ref="vsName"></div><div class="vs-score" data-ref="vsScore"></div></div>

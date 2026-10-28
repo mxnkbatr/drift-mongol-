@@ -157,5 +157,10 @@
   "title.mode": "АРКАДЫН СОРИЛТ",
   "title.duration": "60 СЕК",
   "title.quickHelp": "ХИЙ + ГАР ТООРМОС",
-  "boot.credit": "Developed by Munkhbaatar Dorjsuren"
+  "boot.credit": "Developed by Munkhbaatar Dorjsuren",
+  "title.controls": "УДИРДЛАГА",
+  "title.steer": "ЖОЛООДОХ",
+  "title.throttle": "ХИЙ",
+  "title.handbrake": "ГАР ТООРМОС",
+  "title.phoneControls": "Утас: дэлгэцийн товчлууруудаар жолоодно"
 }

@@ -441,3 +441,33 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
   .drift { left: calc(50% + min(16vw, 90px)); bottom: calc(var(--u) * 4.2 + var(--safe-b)); }
   .drift.on { transform: translateX(-50%) scale(.78); transform-origin: bottom center; }
 }
+
+/* ─── Midnight street-racing title deck ────────────────────────────── */
+.title { background: linear-gradient(90deg, rgba(4,10,28,.9) 0%, rgba(4,10,28,.5) 42%, rgba(4,10,28,.08) 68%, rgba(4,10,28,.58) 100%); }
+.title-left { max-width: 50%; gap: calc(var(--u) * 1.1); }
+.title-left .tag { max-width: 30rem; color: #bdeeff; letter-spacing: .14em; }
+.quick-spec { width: fit-content; padding: 5px 10px; border-left: 4px solid var(--pink); background: rgba(8, 27, 67, .7); color: #e7f8ff; }
+.control-deck { width: min(100%, 470px); padding: calc(var(--u) * 1.15) calc(var(--u) * 1.5); border: 2px solid rgba(57,230,255,.5); border-radius: 14px; background: linear-gradient(135deg, rgba(7,26,56,.86), rgba(20,15,46,.72)); box-shadow: 0 5px 0 rgba(7,6,26,.72), inset 0 0 22px rgba(57,230,255,.08); }
+.control-deck-title { color: var(--cyan); font-family: var(--display); font-weight: 900; font-size: calc(var(--u) * 1.25); letter-spacing: .18em; }
+.control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.control-grid > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.control-grid b { color: #fff4d8; font-size: calc(var(--u) * 1.05); letter-spacing: .08em; white-space: nowrap; }
+.control-grid kbd { width: fit-content; min-width: 46px; padding: 3px 8px; border: 2px solid var(--gold); border-radius: 6px; background: rgba(255,211,92,.12); color: var(--gold); font-size: calc(var(--u) * 1.5); }
+.control-phone { display: none; margin-top: 8px; color: #bdeeff; font-weight: 800; }
+.title-buttons { padding: 7px; background: rgba(4,10,28,.7); border-color: rgba(57,230,255,.42); }
+@media (pointer: coarse) {
+  .control-phone { display: block; }
+  .control-grid { display: none; }
+}
+@media (max-width: 760px) {
+  .title-left { max-width: 58%; }
+  .title-right { max-width: 37%; }
+  .title-buttons { max-width: 220px; }
+  .control-deck { padding: 8px 10px; }
+}
+@media (max-height: 520px) {
+  .title-left { gap: 6px; }
+  .control-deck { width: min(100%, 360px); }
+  .control-deck-title { font-size: 11px; }
+  .control-phone { font-size: 11px; }
+}

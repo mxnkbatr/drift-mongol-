@@ -157,5 +157,10 @@
   "title.mode": "街机赛",
   "title.duration": "60秒",
   "title.quickHelp": "油门 + 手刹",
-  "boot.credit": "Developed by Munkhbaatar Dorjsuren"
+  "boot.credit": "Developed by Munkhbaatar Dorjsuren",
+  "title.controls": "操作",
+  "title.steer": "转向",
+  "title.throttle": "油门",
+  "title.handbrake": "手刹",
+  "title.phoneControls": "手机：使用触控按键"
 }
