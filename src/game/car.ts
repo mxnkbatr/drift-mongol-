@@ -281,6 +281,10 @@ export class Car {
     for (const w of this.wheels) w.rotation.x = this.wheelSpin
     for (const p of this.frontPivots) p.rotation.y = this.steerVisual
     this.tailMat.emissiveIntensity = braking ? 4.5 : 1.2
+    const glowMat = this.glow.material as THREE.MeshBasicMaterial
+    const pulse = 0.5 + Math.sin(performance.now() * 0.012) * 0.08
+    glowMat.color.set(this.telemetry.drifting ? '#ff4fd8' : '#39e6ff')
+    glowMat.opacity = Math.min(0.95, (this.telemetry.throttle > 0.05 ? 0.5 : 0.3) + (this.telemetry.drifting ? 0.28 : 0) + pulse * 0.12)
   }
 
   /** World positions of the rear (0,1) and front (2,3) contact patches. */

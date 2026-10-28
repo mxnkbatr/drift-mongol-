@@ -12,3 +12,8 @@ ios/App/output/
 ios/DerivedData/
 ios/App/App/public/
 ios/capacitor-cordova-ios-plugins/
+# Assets restored from assets.lock.json
+/assets/share/favicon.png
+/assets/share/og.png
+/assets/store/drift-king-steppe-neon-icon.png
+/assets/store/drift-king-steppe-neon-splash.png

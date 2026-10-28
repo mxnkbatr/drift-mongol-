@@ -24,21 +24,21 @@ function canvas(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => v
 
 function roadTexture(): THREE.CanvasTexture {
   return canvas(256, 512, ctx => {
-    ctx.fillStyle = '#bfbfc6'
+    ctx.fillStyle = '#111a39'
     ctx.fillRect(0, 0, 256, 512)
     const r = rng(11)
     for (let i = 0; i < 2600; i += 1) {
-      const v = 150 + Math.floor(r() * 90)
-      ctx.fillStyle = `rgb(${v},${v},${v + 6})`
+      const v = 18 + Math.floor(r() * 20)
+      ctx.fillStyle = `rgb(${v},${v + 8},${v + 28})`
       ctx.fillRect(r() * 256, r() * 512, 2, 2)
     }
-    // Lane edges and a dashed centre line (dash 3 m of every 10 m).
-    ctx.fillStyle = '#ffffff'
+    // Premium neon racing line: cyan outside rails, magenta inside markers.
+    ctx.fillStyle = '#39e6ff'
     ctx.fillRect(7, 0, 5, 512)
     ctx.fillRect(244, 0, 5, 512)
     ctx.fillStyle = '#ffd35c'
     ctx.fillRect(125, 0, 6, 150)
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'
+    ctx.fillStyle = '#ff4fd8'
     ctx.fillRect(66, 300, 3, 70)
     ctx.fillRect(189, 300, 3, 70)
   })
@@ -49,12 +49,12 @@ function lineTexture(): THREE.CanvasTexture {
   return canvas(256, 512, ctx => {
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, 256, 512)
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = '#39e6ff'
     ctx.fillRect(7, 0, 5, 512)
     ctx.fillRect(244, 0, 5, 512)
     ctx.fillStyle = '#ffd35c'
     ctx.fillRect(125, 0, 6, 150)
-    ctx.fillStyle = 'rgba(255,255,255,0.55)'
+    ctx.fillStyle = '#ff4fd8'
     ctx.fillRect(66, 300, 3, 70)
     ctx.fillRect(189, 300, 3, 70)
   })
@@ -150,7 +150,7 @@ export class World {
     this.moon.position.set(-420, 330, -520)
     scene.add(this.moon)
 
-    this.roadMat = new THREE.MeshStandardMaterial({ map: roadTexture(), color: '#6b6e8c', roughness: 0.8, metalness: 0.1, emissiveMap: lineTexture(), emissive: '#ffffff', emissiveIntensity: 0.5 })
+    this.roadMat = new THREE.MeshStandardMaterial({ map: roadTexture(), color: '#263568', roughness: 0.64, metalness: 0.28, emissiveMap: lineTexture(), emissive: '#b7eaff', emissiveIntensity: 0.8 })
     this.buildRoad()
     this.buildShoulders()
     this.buildBarriers()
