@@ -471,3 +471,21 @@ html[lang='mn'] .title .logo .mn { text-shadow: 0.05em 0.07em 0 var(--pink), 0.0
   .control-deck-title { font-size: 11px; }
   .control-phone { font-size: 11px; }
 }
+
+/* ─── Midnight Circuit hero: Japanese expressway title treatment ──── */
+.title {
+  background-image:
+    linear-gradient(90deg, rgba(3, 7, 20, .9) 0%, rgba(3, 7, 20, .62) 38%, rgba(3, 7, 20, .12) 72%, rgba(3, 7, 20, .55) 100%),
+    url('/store/midnight-circuit-hero.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.title::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px); mix-blend-mode: screen; opacity: .45; }
+.title > * { position: relative; z-index: 1; }
+.title .logo .mn { color: #f7f8ff; text-shadow: .05em .07em 0 #ff174f, .09em .12em 0 #071127; }
+.title .logo .zh { color: #eaf7ff; text-shadow: .05em .07em 0 #1ce5ff, .09em .12em 0 #071127; }
+.title .logo .en { color: #ff314f; text-shadow: .05em .07em 0 #1ce5ff, .08em .11em 0 #071127; }
+@media (max-width: 760px) {
+  .title { background-position: 62% center; }
+}
