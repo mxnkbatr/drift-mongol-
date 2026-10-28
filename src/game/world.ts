@@ -488,8 +488,8 @@ export class World {
           neonParts.push(bar)
         }
         if (near && r() < 0.3) {
-          const mast = new THREE.CylinderGeometry(0.055, 0.08, 2.2, 6).translate(cx, h + 1.1, cz)
-          const beacon = new THREE.BoxGeometry(0.28, 0.08, 0.28).translate(cx, h + 2.25, cz)
+          const mast = new THREE.CylinderGeometry(0.055, 0.08, 2.2, 6).toNonIndexed().translate(cx, h + 1.1, cz)
+          const beacon = new THREE.BoxGeometry(0.28, 0.08, 0.28).toNonIndexed().translate(cx, h + 2.25, cz)
           neonParts.push(mast, beacon)
         }
       }
