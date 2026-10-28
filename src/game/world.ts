@@ -488,8 +488,14 @@ export class World {
           neonParts.push(bar)
         }
         if (near && r() < 0.3) {
+          const c = neon[Math.floor(r() * neon.length)]
           const mast = new THREE.CylinderGeometry(0.055, 0.08, 2.2, 6).toNonIndexed().translate(cx, h + 1.1, cz)
           const beacon = new THREE.BoxGeometry(0.28, 0.08, 0.28).toNonIndexed().translate(cx, h + 2.25, cz)
+          for (const g of [mast, beacon]) {
+            const colors = new Float32Array(g.attributes.position.count * 3)
+            for (let i = 0; i < colors.length / 3; i += 1) colors.set([c.r, c.g, c.b], i * 3)
+            g.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+          }
           neonParts.push(mast, beacon)
         }
       }
